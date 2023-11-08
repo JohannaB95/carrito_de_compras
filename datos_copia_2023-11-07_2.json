@@ -40,11 +40,5 @@
     "nombreProducto": "Celular ",
     "inventarioProducto": 15,
     "precioProducto": 450000
-  },
-  {
-    "codigoProducto": "08",
-    "nombreProducto": "Gorra",
-    "inventarioProducto": 5,
-    "precioProducto": 15000
   }
 ]
