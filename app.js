@@ -11,7 +11,7 @@ let datosArchivo = require('./datos.json');
 //Se carga el código que contiene el archivo 'menu.js' en la carpeta 'proy_modules'.
 const { mostrarMenu, preguntarNuevoProducto, digitarCodigo, digitarNombre, digitarInventario, digitarPrecio,
     pausa, preguntarOtroProducto, preguntarNuevoPedido, ingresarCodigo, ingresarNombre, ingresarUnidades,
-    ingresarPrecio, preguntarOtroPedido, datosCliente, eliminarProducto, recuperarDatos } = require('./proy_modules/menu.js');
+    ingresarPrecio, preguntarOtroPedido, datosCliente, CopiaRespaldo, eliminarProducto, recuperarDatos } = require('./proy_modules/menu.js');
 
 //Se declara una función flecha llamada main y que es asíncrona
 const main = async () => {
@@ -104,10 +104,19 @@ const main = async () => {
         }
 
         /*Leer los datos del archivo Json
-         Serializar para trabajar los datos como un arreglo de objetos de clase Producto*/
-        // Se crea un método llamado cargarArchivoProductos que es una función flecha de tipo asincronica sin parámetros
+               Serializar para trabajar los datos como un arreglo de objetos de clase Producto*/
+        // Se crea un método llamado cargarArchivoProductos que es una función flecha sin parámetros
         cargarArchivoProductos = async () => {
 
+            // Limpia la consola antes de imprimir la cantidad de 
+            console.clear();
+
+            //Se imprime en la consola un mensaje que indica que se visualizara en este caso la cantidad de productos
+            console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.cyan);
+            console.log(`♦   `.cyan + `Cantidad de productos`.bgCyan + `   ♦`.cyan);
+            console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦\n`.cyan);
+
+            productosTienda.mostrarProductos();
             //Se crea una variable llamada contador que se inicia en 0
             let contador = 0;
 
@@ -140,15 +149,7 @@ const main = async () => {
 
                     // Agrega el producto a la lista de productos en la clase ProductosTienda
                     this.#listaProductos.push(producto);
-
                 });
-                // Limpia la consola antes de imprimir los siguientes mensajes y diseños de cada uno
-                console.clear();
-
-                //Se imprime en la consola un mensaje que indica que se visualizara en este caso la cantidad de productos
-                console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.cyan);
-                console.log(`♦   `.cyan + `Cantidad de productos`.bgCyan + `   ♦`.cyan);
-                console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦\n`.cyan);
 
                 //Se imprime en la consola el número de productos cargados y se añade diseño a la interfaz
                 console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
@@ -161,19 +162,19 @@ const main = async () => {
                 console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
             }
         }
-        //Se crea un método llamado mostrarProductos que es una función flecha de tipo asincronica sin parámetros
+
+        //Se crea un método llamado mostrarProductos que es una función flecha asincrónica sin parámetros
         mostrarProductos() {
 
             /*Itera sobre cada producto en la lista y se obtienen los valores de cada uno de los atributos, luego se imprime 
-            la información en la consola siguiendo el orden en el que se están especificando*/
+             la información en la consola siguiendo el orden en el que se están especificando*/
             this.getListaProductos.forEach(producto => {
-                console.log(
-                    `­♦    `.yellow + producto.getCodigoProducto + `     ­♦   `.yellow
+                console.log(`­♦    `.yellow + producto.getCodigoProducto + `     ­♦   `.yellow
                     + producto.getNombreProducto + `      ­♦   `.yellow +
                     +  producto.getInventarioProducto + `      ­♦   `.yellow +
                     +  producto.getPrecioProducto + `     ­♦   `.yellow);
             })
-        };
+        }
 
         //Se crea un método llamado grabarCopiaRespaldo que es una función flecha de tipo asincronica sin parámetros
         grabarCopiaRespaldo = async () => {
@@ -186,103 +187,153 @@ const main = async () => {
             console.log(`★  `.cyan + `Grabar Copia de Respaldo`.bgCyan + `  ★`.cyan);
             console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.cyan);
 
-            //Se declara una variable llamada contadorCopia que se inicializa en 1
-            let contadorCopia = 1;
+            /*Se declara una variable constante llamada nuevaCopia que almacenará el valor resuelto de la
+            promesa contenida en CopiaRespaldo, que es la confirmación o negación para realizar una copia de
+            respaldo*/
+            const nuevaCopia = await CopiaRespaldo();
 
-            // Verificar si ya existe un archivo de seguimiento para el contador
-            fs.access('contador_copia.json', (err) => {
-                if (!err) {
-                    const data = fs.readFileSync('contador_copia.json');
-                    const { contador } = JSON.parse(data);
-                    if (contador) {
-                        contadorCopia = contador;
+            /*Se verifica si el valor de nuevaCopia es true utilizando una declaración if. Esto indica que el siguiente
+            bloque de código se ejecutará si nuevaCopia es evaluada como verdadero.*/
+            if (nuevaCopia === true) {
+                /*Se declara una variable de tipo constante llamada nombreArchivo que contendra los datos de un 
+                archivo llamado datos.json*/
+                const nombreArchivo = 'datos.json';
+                /*Se lee el contenido del archivo datos.json que esta almacenado en la variable nombreArchivo y 
+                que utiliza una codificación de caracteres utf-8, cuya llamada se ejecutara al completar la revisión de
+                errores y que almacenara el contenido leido en data*/
+                fs.readFile(nombreArchivo, 'utf-8', (err, data) => {
+                    // Si hay un error al leer el archivo, se imprime un mensaje de error en la consola
+                    if (err) {
+                        console.log('Error al leer el archivo', err);
+                        // Si la lectura del archivo fue exitosa, se procede a crear una copia de respaldo
+                    } else {
+                        /*Se declara una variable constante llamada fecha que estara guardando el valor de la fecha 
+                        actual en formato ISO y extrayendo la parte de la fecha (sin la hora)*/
+                        const fecha = new Date().toISOString().split('T')[0];
+                        /*Se declara una variable constante llamada nuevoArchivo que estara almacenando el nombre del
+                        archivo nuevo que será la copia del archivo original*/
+                        const nuevoArchivo = `datos_copia_${fecha}.json`;
+                        /* Se escribe el contenido del nuevo archivo `datos_copia_${fecha}.json`, almacenado 
+                        en la variable nuevoArchivo. Se convierte el objeto JavaScript (obtenido al parsear el contenido original del archivo) 
+                        a una cadena de texto JSON con formato legible (agregando sangría).*/
+                        fs.writeFile(nuevoArchivo, JSON.stringify(JSON.parse(data), null, 2), err => {
+                            // Si hay un error al leer el archivo, se imprime un mensaje de error en la consola
+                            if (err) {
+                                console.log(`\n♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
+                                console.log(`♦ `.red + `Error al leer el archivo`.bgRed + ` ♦`.red, err);
+                                console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
+                                // Si la lectura del archivo es exitosa, se imprime un mensaje indicando que la copia de seguridad se ha completado
+                            } else {
+                                console.log(`\n♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
+                                console.log(`♦  `.red + `Copia de seguridad de ${nombreArchivo} completada`.bgRed + ` ♦`.red);
+                                console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
+                            }
+                        })
                     }
-                }
-                const datosOriginales = fs.readFileSync('datos.json');
-                const listaProductos = JSON.parse(datosOriginales);
-
-                // Convierte los datos a formato JSON
-                const datos = JSON.stringify(listaProductos, null, 2);
-
-                const fecha = new Date().toISOString().split('T')[0];
-                const nombreArchivo = `datos_copia_${fecha}_${contadorCopia}.json`; // Nombre de la copia de respaldo
-
-                // Escribe los datos en el nuevo archivo de copia de respaldo
-                fs.writeFileSync(nombreArchivo, datos);
-
-                // Incrementar el contador y guardarlo en el archivo
-                contadorCopia++;
-                fs.writeFileSync('contador_copia.json', JSON.stringify({ contador: contadorCopia }));
-
-                console.log(`\n♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.magenta);
-                console.log(`♦`.magenta + `Copia de respaldo guardada exitosamente en ${nombreArchivo} `.bgMagenta + `♦`.magenta);
-                console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.magenta);
-            });
+                })
+            }
         }
 
+        //Se crea un método llamado reparacionDatos que es una función flecha de tipo asincronica sin parámetros
         reparacionDatos = async () => {
 
+            // Limpia la consola antes de imprimir los siguientes mensajes y diseños de cada uno
             console.clear();
 
+            //Se imprime en la consola un mensaje que indica que es la sección de reparación de datos.
             console.log(`\n★★★★★★★★★★★★★★★★★★★★★★★★★`.cyan);
             console.log(`★  `.cyan + `Reparación de datos`.bgCyan + `  ★`.cyan);
             console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★`.cyan);
 
+            /*Se declara una variable constante llamada datos que almacenará el valor resuelto de la
+            promesa contenida en recuperarDatos, que es la confirmación o negación para realizar la restauración
+            de alguna de las copias de seguridad que se encuentren disponibles*/
             const datos = await recuperarDatos();
+
+            // Si existen datos en la copia de seguridad seleccionada
             if (datos) {
+                //Se muestran los datos recuperados en la consola
                 console.log(`Los datos de la copia de seguridad seleccionada son:\n`.green);
                 console.log(datos);
-                // Aquí puedes manejar los datos restaurados según tus necesidades
+                //Se imprime un mensaje en la consola indicando que la copia de seuridad se ha recuperado bien
                 console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
                 console.log(`♦ `.red + `La copia de seguridad se ha recuperado exitosamente`.bgRed + ` ♦`.red);
                 console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
 
-                // Guardar los datos en el archivo datos.json
+                //se escriben y se guardan los datos recuperados en el archivo datos.json
                 fs.writeFileSync('datos.json', JSON.stringify(datos, null, 2));
+                //Se imprime un mensaje en la consola indicando que los datos se han guardado en datos.json.
                 console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
                 console.log(`♦ `.red + `Los datos se han guardado en el archivo datos.json.`.bgRed + ` ♦`.red);
                 console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
             } else {
+                // Si no se selecciona ninguna copia de seguridad, se imprime un mensaje indicando eso
                 console.log(`\n♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
                 console.log(`♦ `.red + `No se seleccionó ninguna copia de seguridad.`.bgRed + ` ♦`.red);
                 console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
             }
         }
 
+        //Se crea un método llamado borrarProducto que es una función flecha de tipo asincronica sin parámetros
         borrarProducto = async () => {
+
+            // Limpia la consola antes de imprimir los siguientes mensajes y diseños de cada uno
             console.clear();
 
+            //Se imprime en la consola un mensaje que indica que es la sección de Eliminar un Producto.
             console.log(`\n★★★★★★★★★★★★★★★★★★★★★★★★★★`.cyan);
             console.log(`★  `.cyan + `Eliminar un Producto`.bgCyan + `  ★`.cyan);
             console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★`.cyan);
 
+            //Se llama al método mostrarProductos del objeto productosTienda para que muestre la lista de productos
             productosTienda.mostrarProductos();
+
+            /*Se declara una variable constante llamada codigoProducto que almacenará el valor resuelto de la
+            promesa contenida en eliminarProducto, que es la confirmación o negación del ingreso del
+            nuevo producto*/
             const codigoProducto = await eliminarProducto();
 
+            // Si se proporciona un código de producto válido
             if (codigoProducto) {
+                // Se declara una variable llamada listaProductos que almacena la lista de productos desde el archivo
                 const listaProductos = datosArchivo;
+                /* Se declara una variable constante llamada productosFiltrados, la cual utiliza el método filter
+                para excluir todos los productos de la lista de productos que contengan un código específico, en este
+                caso, el proporcionado por el usuario.*/
                 const productosFiltrados = listaProductos.filter(
+                    /*Se define una función flecha con un parámetro producto. La condición dice que para cada elemento
+                     (producto) en el array sobre el cual se está iterando, se verifica si el código del producto 
+                     (producto.codigoProducto) no es igual al código proporcionado por el usuario (codigoProducto). */
                     (producto) => producto.codigoProducto !== codigoProducto
                 );
+                /*Si la longitud de productosFiltrados es menor que la longitud de listaProductos, significa que al 
+                menos un producto fue eliminado en la operación de filtrado. */
                 if (productosFiltrados.length < listaProductos.length) {
 
+                    //Se imprime un mensaje indicando que el producto fue eliminado
                     console.log(`\n♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
                     console.log(`♦ `.red + `Producto eliminado con éxito.`.bgRed + ` ♦`.red);
                     console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
 
+                    // Se utiliza fs.writeFile para escribir en el archivo 'datos.json'
+                    // JSON.stringify convierte el array productosFiltrados a una cadena JSON con formato legible (null, 2)
+                    // El tercer argumento de writeFile es una función de retorno de llamada que maneja cualquier error
                     fs.writeFile('datos.json', JSON.stringify(productosFiltrados, null, 2), (error) => {
+                        // Si hay un error al escribir en el archivo, se imprime en la consola
                         if (error) {
                             console.error(error);
-                            return;
                         }
+                        // Si no hay errores al escribir en el archivo, se actualiza la variable datosArchivo
                         datosArchivo = productosFiltrados;
                     });
                 } else {
+                    //Si se digita un código que no se encuentra en la lista, se imprime un mensaje indicando que el producto no existe
                     console.log(`\n♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
                     console.log(`♦ `.red + `El producto no existe en la lista.`.bgRed + ` ♦`.red);
                     console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
                 }
             } else {
+                //Si se dice que no a la pregunta de eliminar un producto, se imprime un mensaje indicando que no se elimino nada
                 console.log(`\n♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
                 console.log(`♦   `.red + `No se eliminó ningún producto.`.bgRed + `   ♦`.red);
                 console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
@@ -308,7 +359,7 @@ const main = async () => {
             nuevo producto*/
             const ingresarNuevo = await preguntarNuevoProducto();
 
-            /*Se verifica si el valor de ingresarNuevo es true utilizando una declaración if. Esto indica que el siguiente }
+            /*Se verifica si el valor de ingresarNuevo es true utilizando una declaración if. Esto indica que el siguiente
             bloque de código se ejecutará si ingresarNuevo es evaluado como verdadero.*/
             if (ingresarNuevo === true) {
 
@@ -619,48 +670,70 @@ const main = async () => {
     // Se crea una nueva instancia de la clase CarritoCompras
     let carritoCompras = new CarritoCompras();
 
+    // Se declara una variable llamada option con un valor inicial de un string vacío
     let option = ' ';
+
+    // Bucle externo que se ejecuta al menos una vez y se repite mientras la opción no sea '0'
     do {
+        // Bucle interno que se ejecuta al menos una vez y se repite hasta que se ingresa una opción válida del menú
         do {
+            // Se muestra el menú y se espera a que el usuario ingrese una opción válida
             option = await mostrarMenu();
+            // Verifica si la opción está entre 0 y 7
         } while (!(option >= '0' && option <= '7'));
 
+        /*Se evalúa la variable option para determinar qué caso debe ejecutarse, dependiendo la opción 
+        seleccionada por el usuario en el menú. */
         switch (option) {
+            /* Si option es igual a '0', se ejecuta este bloque de código. En este caso, imprime un mensaje indicando
+             que la aplicación se está cerrando y agradece al usuario por usar el servicio. */
             case '0':
                 console.log(`\n★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.cyan);
                 console.log(`★    `.cyan + `Cerrando la aplicación...`.bgCyan + `    ★`.cyan);
                 console.log(`★`.cyan + `Gracias por usar nuestro servicio`.bgCyan + `★`.cyan)
                 console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.cyan);
                 break;
+            /*Si option es igual a '1', se ejecuta este bloque. Muestra los productos y carga el archivo de productos desde la tienda*/
             case '1':
                 await productosTienda.cargarArchivoProductos();
                 break;
+            //Si option es igual a '2', se ejecuta este bloque. Crea una copia de respaldo de los datos de la tienda.
             case '2':
                 await productosTienda.grabarCopiaRespaldo();
                 break;
+            //Si option es igual a '3', se ejecuta este bloque. Realiza una operación de reparación de datos en la tienda
             case '3':
                 await productosTienda.reparacionDatos();
                 break;
+            //Si option es igual a '4', se ejecuta este bloque. Permite al usuario ingresar nuevos productos en la tienda
             case '4':
                 await productosTienda.nuevoIngreso();
                 break;
+            //Si option es igual a '5', se ejecuta este bloque. Permite al usuario borrar un producto de la tienda
             case '5':
                 await productosTienda.borrarProducto();
                 break;
+            //Si option es igual a '6', se ejecuta este bloque. Permite al usuario realizar un nuevo pedido en el carrito de compras
             case '6':
                 await carritoCompras.nuevoPedido();
                 break;
+            //Si option es igual a '7', se ejecuta este bloque. Imprime la factura desde el carrito de compras.
             case '7':
                 await carritoCompras.imprimirFactura();
                 break;
+            /*Si option no coincide con ninguno de los casos anteriores, se ejecuta este bloque. Imprime un mensaje
+             indicando que la opción no es válida y pide al usuario que lo intente de nuevo*/
             default:
-                console.log('Opción no válida. Intente de nuevo.');
+                console.log(`Opción no válida. Intente de nuevo.`.red);
                 break;
         }
 
+        // Verifica si la opción no es '0'
         if (option !== '0') {
+            // Se pausa la ejecución para esperar la entrada del usuario
             await pausa();
         }
+        // Se repite mientras la opción no sea '0'
     } while (option !== '0');
 
 };
