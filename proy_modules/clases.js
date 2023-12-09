@@ -4,12 +4,12 @@ require('colors');
 //Se incluye el módulo fs que permite gestionar el sistema de archivos.
 const fs = require('fs');
 
+//Se incluye el módulo path que permite gestionar rutas de archivos y directorios
+const path = require('path');
+
 /*Se cargan los datos del archivo datos.json en la variable datosArchivo. Esto es posible debido al uso de require,
  que puede cargar archivos JSON en Node.js.*/
 const datosArchivo = require('../datos.json');
-
-//Se carga el código que contiene el archivo 'menu.js' en la carpeta 'proy_modules'.
-const { datosCliente, CopiaRespaldo, eliminarProducto, recuperarDatos } = require('./menu');
 
 //Se define la clase Producto
 class Producto {
@@ -95,6 +95,7 @@ class ProductosTienda {
     // Se crea un método llamado cargarArchivoProductos que es una función flecha sin parámetros
     cargarArchivoProductos = async () => {
 
+
         //Se crea una variable llamada contador que se inicia en 0
         let contador = 0;
 
@@ -154,207 +155,392 @@ class ProductosTienda {
         })
     }
 
-    //Se crea un método llamado grabarCopiaRespaldo que es una función flecha de tipo asincronica sin parámetros
+    //Se crea un método llamado grabarCopiaRespaldo que es una función flecha asincrónica sin parámetros
     grabarCopiaRespaldo = async () => {
 
-        /*Se declara una variable constante llamada nuevaCopia que almacenará el valor resuelto de la
-            promesa contenida en CopiaRespaldo, que es la confirmación o negación para realizar una copia de
-            respaldo*/
-        const nuevaCopia = await CopiaRespaldo();
-
-        /*Se verifica si el valor de nuevaCopia es true utilizando una declaración if. Esto indica que el siguiente
-        bloque de código se ejecutará si nuevaCopia es evaluada como verdadero.*/
-        if (nuevaCopia === true) {
-            /*Se declara una variable de tipo constante llamada nombreArchivo que contendra los datos de un 
-            archivo llamado datos.json*/
-            const nombreArchivo = 'datos.json';
-            /*Se lee el contenido del archivo datos.json que esta almacenado en la variable nombreArchivo y 
-            que utiliza una codificación de caracteres utf-8, cuya llamada se ejecutara al completar la revisión de
-            errores y que almacenara el contenido leido en data*/
-            fs.readFile(nombreArchivo, 'utf-8', (err, data) => {
-                // Si hay un error al leer el archivo, se imprime un mensaje de error en la consola
-                if (err) {
-                    console.log('Error al leer el archivo', err);
-                    // Si la lectura del archivo fue exitosa, se procede a crear una copia de respaldo
-                } else {
-                    /*Se declara una variable constante llamada fecha que estara guardando el valor de la fecha 
-                    actual en formato ISO y extrayendo la parte de la fecha (sin la hora)*/
-                    const fecha = new Date().toISOString().split('T')[0];
-                    /*Se declara una variable constante llamada nuevoArchivo que estara almacenando el nombre del
-                    archivo nuevo que será la copia del archivo original*/
-                    const nuevoArchivo = `datos_copia_${fecha}.json`;
-                    /* Se escribe el contenido del nuevo archivo `datos_copia_${fecha}.json`, almacenado 
-                    en la variable nuevoArchivo. Se convierte el objeto JavaScript (obtenido al parsear el contenido original del archivo) 
-                    a una cadena de texto JSON con formato legible (agregando sangría).*/
-                    fs.writeFile(nuevoArchivo, JSON.stringify(JSON.parse(data), null, 2), err => {
-                        // Si hay un error al leer el archivo, se imprime un mensaje de error en la consola
-                        if (err) {
-                            console.log(`\n♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
-                            console.log(`♦ `.red + `Error al leer el archivo`.bgRed + ` ♦`.red, err);
-                            console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
-                            // Si la lectura del archivo es exitosa, se imprime un mensaje indicando que la copia de seguridad se ha completado
-                        } else {
-                            console.log(`\n♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
-                            console.log(`♦  `.red + `Copia de seguridad de ${nombreArchivo} completada`.bgRed + ` ♦`.red);
-                            console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
-                        }
-                    })
-                }
-            })
-        }
-    }
-
-    //Se crea un método llamado reparacionDatos que es una función flecha de tipo asincronica sin parámetros
-    reparacionDatos = async () => {
-
-        /*Se declara una variable constante llamada datos que almacenará el valor resuelto de la
-             promesa contenida en recuperarDatos, que es la confirmación o negación para realizar la restauración
-             de alguna de las copias de seguridad que se encuentren disponibles*/
-        const datos = await recuperarDatos();
-
-        // Si existen datos en la copia de seguridad seleccionada
-        if (datos) {
-            //Se muestran los datos recuperados en la consola
-            console.log(`Los datos de la copia de seguridad seleccionada son:\n`.green);
-            console.log(datos);
-            //Se imprime un mensaje en la consola indicando que la copia de seuridad se ha recuperado bien
-            console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
-            console.log(`♦ `.red + `La copia de seguridad se ha recuperado exitosamente`.bgRed + ` ♦`.red);
-            console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
-
-            //se escriben y se guardan los datos recuperados en el archivo datos.json
-            fs.writeFileSync('datos.json', JSON.stringify(datos, null, 2));
-            //Se imprime un mensaje en la consola indicando que los datos se han guardado en datos.json.
-            console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
-            console.log(`♦ `.red + `Los datos se han guardado en el archivo datos.json.`.bgRed + ` ♦`.red);
-            console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
-        } else {
-            // Si no se selecciona ninguna copia de seguridad, se imprime un mensaje indicando eso
-            console.log(`\n♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
-            console.log(`♦ `.red + `No se seleccionó ninguna copia de seguridad.`.bgRed + ` ♦`.red);
-            console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
-        }
-    }
-
-    //Se crea un método llamado borrarProducto que es una función flecha de tipo asincronica sin parámetros
-    borrarProducto = async () => {
-
-        /*Se declara una variable constante llamada codigoProducto que almacenará el valor resuelto de la
-                   promesa contenida en eliminarProducto, que es la confirmación o negación del ingreso del
-                   nuevo producto*/
-        const codigoProducto = await eliminarProducto();
-
-        // Si se proporciona un código de producto válido
-        if (codigoProducto) {
-            // Se declara una variable llamada listaProductos que almacena la lista de productos desde el archivo
-            const listaProductos = datosArchivo;
-            /* Se declara una variable constante llamada productosFiltrados, la cual utiliza el método filter
-            para excluir todos los productos de la lista de productos que contengan un código específico, en este
-            caso, el proporcionado por el usuario.*/
-            const productosFiltrados = listaProductos.filter(
-                /*Se define una función flecha con un parámetro producto. La condición dice que para cada elemento
-                 (producto) en el array sobre el cual se está iterando, se verifica si el código del producto 
-                 (producto.codigoProducto) no es igual al código proporcionado por el usuario (codigoProducto). */
-                (producto) => producto.codigoProducto !== codigoProducto
-            );
-            /*Si la longitud de productosFiltrados es menor que la longitud de listaProductos, significa que al 
-            menos un producto fue eliminado en la operación de filtrado. */
-            if (productosFiltrados.length < listaProductos.length) {
-
-                //Se imprime un mensaje indicando que el producto fue eliminado
-                console.log(`\n♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
-                console.log(`♦ `.red + `Producto eliminado con éxito.`.bgRed + ` ♦`.red);
-                console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
-
-                // Se utiliza fs.writeFile para escribir en el archivo 'datos.json'
-                // JSON.stringify convierte el array productosFiltrados a una cadena JSON con formato legible (null, 2)
-                // El tercer argumento de writeFile es una función de retorno de llamada que maneja cualquier error
-                fs.writeFile('datos.json', JSON.stringify(productosFiltrados, null, 2), (error) => {
-                    // Si hay un error al escribir en el archivo, se imprime en la consola
-                    if (error) {
-                        console.error(error);
-                    }
-                });
-            } else {
-                //Si se digita un código que no se encuentra en la lista, se imprime un mensaje indicando que el producto no existe
-                console.log(`\n♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
-                console.log(`♦ `.red + `El producto no existe en la lista.`.bgRed + ` ♦`.red);
-                console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
-            }
-        } else {
-            //Si se dice que no a la pregunta de eliminar un producto, se imprime un mensaje indicando que no se elimino nada
-            console.log(`\n♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
-            console.log(`♦   `.red + `No se eliminó ningún producto.`.bgRed + `   ♦`.red);
-            console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
-        }
-    };
-
-    // Se define una función asíncrona llamada preguntarNuevoProducto
-    preguntarNuevoProducto = async () => {
-        // Se crea una interfaz de línea de lectura para gestionar la entrada/salida
-        const readline = require('readline').createInterface({
+        // Crea una interfaz de lectura en la consola para permitir la entrada del usuario
+        const readLine = require('readline').createInterface({
+            // Define el flujo de entrada, para leer la entrada del usuario desde la consola
             input: process.stdin,
+            //Define el flujo de salida, para mostrar mensajes en la consola
             output: process.stdout
         });
 
-        // Se inicializa la variable que determina si se debe seguir ingresando productos
+        //Se declara una variable llamada respuesta sin valor inicial
+        let respuesta;
+        //Se utiliza un bucle do-while que se encarga de repetir el proceso si la respuesta del usuario no es ni 'SI' ni 'NO'.
+        do {
+            //Se utiliza una promesa para obtener la respuesta del usuario de manera asíncrona.
+            respuesta = await new Promise(resolve => {
+                // Se utiliza la interfaz de línea de lectura para obtener la respuesta del usuario.
+                readLine.question(`\n¿Desea realizar una copia de respaldo? (SI/NO) `.red, (respuesta) => {
+                    // La respuesta se resuelve y se convierte a mayúsculas sin espacios adicionales.
+                    resolve(respuesta.trim().toUpperCase());
+                });
+            });
+
+            //verifica si la respuesta del usuario (almacenada en la variable respuesta) es igual a la cadena 'SI'. Si es así, se ejecuta el bloque de código dentro del if.
+            if (respuesta === 'SI') {
+                //Se crea una constante llamada nombreArchivo que contiene el nombre del archivo que se va a leer, en este caso, 'datos.json'.
+                const nombreArchivo = 'datos.json';
+
+                /*Utiliza el método readFile del módulo fs para leer el contenido del archivo de manera asíncrona. 
+                Toma tres argumentos: el nombre del archivo, la codificación (en este caso, 'utf-8' para interpretar 
+                el archivo como texto) y una función de devolución de llamada que se ejecutará una vez que la operación de lectura se haya completado. */
+                fs.readFile(nombreArchivo, 'utf-8', (err, data) => {
+                    /*Si hay un error en la lectura del archivo, en este caso si el archivo no existe se imprimira un mensaje
+                    de error en la consola y que indica que se debe dirigir a la opción de Reparación de datos*/
+                    if (err) {
+                        console.log(`\n♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
+                        console.log(`♦ `.red + `Error al leer el archivo ${nombreArchivo}`.bgRed + ` ♦`.red);
+                        console.log(`♦    `.red + `Dirijase a Reparación de datos`.bgRed + `   ♦`.red);
+                        console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
+                        // Se cierra aquí si hay un error al leer el archivo
+                        readLine.close();
+                        return;
+                    }
+
+                    /*Se usa para eliminar espacios en blanco al inicio y al final de la cadena almacenada en la variable
+                    data. Luego, verifica si la cadena resultante es igual a una cadena vacía. Si el archivo está vacio se imprimira un mensaje
+                    de error en la consola y que indica que se debe dirigir a la opción de Reparación de datos*/
+                    if (data.trim() === '') {
+                        console.log(`\n♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
+                        console.log(`♦ `.red + `Error: El archivo ${nombreArchivo} está vacío o no existe`.bgRed + ` ♦`.red);
+                        console.log(`♦            `.red + `Dirijase a Reparación de datos`.bgRed + `           ♦`.red);
+                        console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
+                        // Se cierra aquí si hay un error al leer el archivo
+                        readLine.close();
+                        return;
+                    }
+
+                    /*Se crea una variable llamada fecha en la que se almacenara la fecha actual en la que se realiza la copia de seguridad.
+                    Se obtiene la fecha actual en formato ISO utilizando new Date().toISOString().
+                    Luego, se utiliza split('T') para dividir la cadena en dos partes, obteniendo solo la parte de la fecha (sin la hora).*/
+                    const fecha = new Date().toISOString().split('T')[0];
+                    /*Se crea una variable de tipo constante llamada nuevoArchivo que crea un nuevo nombre de 
+                    archivo para la copia de respaldo concatenando la cadena "datos_copia_", la fecha obtenida y la 
+                    extensión .json.*/
+                    const nuevoArchivo = `datos_copia_${fecha}.json`;
+
+                    /*Escribe el contenido del archivo original en el nuevo archivo de copia de respaldo. Aquí, JSON.parse(data)
+                    se utiliza para convertir la cadena JSON en un objeto JavaScript, y luego JSON.stringify(..., null, 2) 
+                    convierte ese objeto de nuevo en una cadena JSON con formato y espaciado adecuados. */
+                    fs.writeFileSync(nuevoArchivo, JSON.stringify(JSON.parse(data), null, 2));
+
+                    //Se imprime un mensaje en la consola que indica que la copia de seguridad ha sido completada
+                    console.log(`\n♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
+                    console.log(`♦  `.red + `Copia de seguridad de ${nombreArchivo} completada`.bgRed + ` ♦`.red);
+                    console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
+
+                    //Se cierra la interfaz aquí si la operación de escritura ha finalizado
+                    readLine.close();
+                });
+
+                //Si la respuesta del usuario es no, se imprimira un mensaje en la consola que indica que no se realizara la copia
+            } else if (respuesta === 'NO') {
+                console.log(`\nNo se realizará una copia de respaldo.`.yellow);
+                //Se cierra la interfaz de lectura después de imprimir el mensaje
+                readLine.close();
+                /*Si la respuesta no es ni SI ni NO, sino otra respuesta se imprimira un mensaje en la consola indicando
+                 al usuario que debe ingresar como respuesta un si o un no*/
+            } else {
+                console.log(`\nRespuesta no válida. Por favor, ingrese 'SI' o 'NO'.`.yellow);
+            }
+            //La condición del bucle (while) verifica si la respuesta no es 'SI' y no es 'NO'.
+        } while (respuesta !== 'SI' && respuesta !== 'NO');
+
+        // Cierra la interfaz de lectura aquí si ha terminado el bucle
+        readLine.close();
+    };
+
+    //Se crea un método llamado reparacionDatos que es una función flecha asincrónica sin parámetros
+    reparacionDatos = async () => {
+
+        // Crea una interfaz de lectura en la consola para permitir la entrada del usuario
+        const readLine = require('readline').createInterface({
+            // Define el flujo de entrada, para leer la entrada del usuario desde la consola
+            input: process.stdin,
+            //Define el flujo de salida, para mostrar mensajes en la consola
+            output: process.stdout
+        });
+
+        //Se declara una variable constante llamada ruta que almacenara la ruta del directorio superior al directorio actual
+        const ruta = path.join(__dirname, '..');
+
+        //Se inicia un bucle while. El bucle se ejecutará repetidamente ya que la condición siempre es true.
+        while (true) {
+            /*Se utiliza una promesa para manejar la entrada del usuario de manera asíncrona. La función 
+          readLine.question solicita al usuario que ingrese una respuesta a la pregunta*/
+            const respuestaRecuperar = await new Promise((resolve) => {
+                readLine.question(`\n¿Desea recuperar alguna copia de respaldo? (SI/NO) `.red, (respuesta) => {
+                    // La respuesta se resuelve y se convierte a mayúsculas sin espacios adicionales.
+                    resolve(respuesta.trim().toUpperCase());
+                });
+            });
+
+            /*Se verifica si la respuesta del usuario (almacenada en la variable respuestaRecuperar) es igual a la cadena 'SI'. 
+            Si es así, se ejecuta el bloque de código dentro del if.*/
+            if (respuestaRecuperar === 'SI') {
+                /*Se crea una variable constante llamada archivos que almacena el resultado de la lectura de la lista
+                de archivos en el directorio especificado por 'ruta'*/
+                const archivos = fs.readdirSync(ruta);
+
+                /*Se crea una variable constante llamada copiasDisponibles que almacena el resultado de la lectura de la lista
+               de archivos en el directorio especificado y filtra los archivos para encontrar solo aquellos que comienzan
+               con 'datos_copia_' y terminan con '.json'. Esto debería identificar las copias de respaldo en el directorio.*/
+                const copiasDisponibles = archivos.filter(file => file.startsWith('datos_copia_') && file.endsWith('.json'));
+
+                /*Se verifica si hay o no copias de respaldo disponibles. Si no hay copias de respaldo, imprime un 
+                mensaje indicando que no se encontraron y cierra la interfaz de línea de lectura antes de salir de la función*/
+                if (copiasDisponibles.length === 0) {
+                    console.log(`\nNo se encontraron copias de seguridad`.green);
+                    readLine.close();
+                    return;
+                    /*Si hay copias de respaldo disponibles, imprime un mensaje indicando cuáles copias de respaldo 
+                    están disponibles en el directorio. */
+                } else {
+                    console.log(`\nLas siguientes copias de seguridad están disponibles:\n`.green);
+                    /*Se inicia un bucle forEach en el array copiasDisponibles. Por cada elemento del array, se ejecutará 
+                    la función proporcionada como argumento a forEach. La función toma dos parámetros, file e index.
+                    file representa el nombre de cada archivo y index es el índice del elemento en el array. */
+                    copiasDisponibles.forEach((file, index) => {
+                        //Se indica imprimir en la consola el indice de la copia de seguridad más el nombre de cada archivo
+                        console.log(`${index + 1}. ${file}`);
+                    });
+
+                    /*Se utiliza una Promise para esperar la respuesta del usuario mediante la función readLine.question.
+                    La respuesta del usuario se resuelve en la Promise y se almacena en indexSeleccionado. */
+                    const indexSeleccionado = await new Promise(resolve => {
+                        readLine.question(`\nIngrese el número de la copia de seguridad que desea restaurar: `.green, (index) => {
+                            resolve(index);
+                        });
+                    });
+                    /*Se utiliza copiasDisponibles[indexSeleccionado - 1] para obtener el nombre del archivo seleccionado. 
+                    Se resta 1 del índice para ajustar el valor ingresado por el usuario al índice del array.*/
+                    const selectedFile = copiasDisponibles[indexSeleccionado - 1];
+                    //Se verifica si selectedFile tiene un valor válido. Si no es válido, se imprime un mensaje de "Selección no válida"
+                    if (!selectedFile) {
+                        console.log(`\nSelección no válida`.green);
+                        return;
+                        //Si por el contrario es un valor válido
+                    } else {
+                        //Se construye la ruta completa del archivo seleccionado utilizando path.join.
+                        const rutaArchivo = path.join(ruta, selectedFile);
+                        //Se lee el contenido del archivo mediante fs.readFileSync y se almacena en la variable datos.
+                        const datos = fs.readFileSync(rutaArchivo, 'utf-8');
+
+                        /*Se escriben en datos.json los datos que se recuperaron de la copia de seguridad, se convierte
+                        la cadena JSON datos en un objeto JavaScript. Luego se convierte el objeto JavaScript en una 
+                        cadena JSON con formato, utilizando espaciado de 2.*/
+                        fs.writeFileSync('datos.json', JSON.stringify(JSON.parse(datos), null, 2));
+
+                        //Se imprime un mensaje qe indica que los datos se han guardado en el archivo
+                        console.log(`\n♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
+                        console.log(`♦ `.red + `Los datos se han guardado en el archivo datos.json.`.bgRed + ` ♦`.red);
+                        console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
+
+                        //Se cierra la interfaz de lectura
+                        readLine.close();
+
+                        //Retorna el objeto JavaScript 
+                        return JSON.parse(datos);
+                    }
+                }
+                //Si la respuesta del usuario es 'NO', se imprime un mensaje indicando que no se realizará la recuperación de datos.
+            } else if (respuestaRecuperar === 'NO') {
+                console.log(`\nNo se realizará la recuperación de datos.`.yellow);
+                //Se cierra la interfaz de lectura
+                readLine.close();
+                //La función devuelve false para indicar que no se realizará la recuperación de datos.
+                return false;
+                /*Si la respuesta del usuario no es ni 'SI' ni 'NO', se imprime un mensaje de error indicando que la 
+                respuesta no es válida y se solicita al usuario que ingrese 'SI' o 'NO'.*/
+                //No se cierra la interfaz de línea de lectura en este caso, ya que se espera que el usuario proporcione una respuesta válida.
+            } else {
+                console.log(`\nRespuesta no válida. Por favor, ingrese 'SI' o 'NO'.`.yellow);
+            }
+        }
+    };
+
+
+    //Se crea un método llamado borrarProducto que es una función flecha asincrónica sin parámetros
+    borrarProducto = async () => {
+        // Crea una interfaz de lectura en la consola para permitir la entrada del usuario
+        const readLine = require('readline').createInterface({
+            // Define el flujo de entrada, para leer la entrada del usuario desde la consola
+            input: process.stdin,
+            //Define el flujo de salida, para mostrar mensajes en la consola
+            output: process.stdout
+        });
+
+        //Se declara una variable llamada respuestaEliminar sin valor inicial
+        let respuestaEliminar;
+
+        //Se inicia un bucle while. El bucle se ejecutará repetidamente ya que la condición siempre es true.
+        while (true) {
+            //Se utiliza una promesa para obtener la respuesta del usuario de manera asíncrona.
+            respuestaEliminar = await new Promise(resolve => {
+                // Se utiliza la interfaz de línea de lectura para obtener la respuesta del usuario.
+                readLine.question(`\n¿Desea eliminar un producto? (SI/NO) `.red, (respuesta) => {
+                    // La respuesta se resuelve y se convierte a mayúsculas sin espacios adicionales.
+                    resolve(respuesta.trim().toUpperCase());
+                });
+            });
+            /*Se verifica si la respuesta del usuario (almacenada en la variable respuestaEliminar) es igual a la cadena 'SI'. Si 
+            es así, se ejecuta el bloque de código dentro del if.*/
+            if (respuestaEliminar === 'SI') {
+                /*se utiliza una Promise para esperar la entrada del usuario mediante la función readLine.question.
+                El código del producto ingresado por el usuario se almacena en la variable codigoProducto.*/
+                const codigoProducto = await new Promise(resolve => {
+                    readLine.question(`\nDigite el código del producto: `.green, (codigo) => {
+                        //Se resulve el valor de la promesa, mediante la entrada que realiza el usuario, es decir el código del producto
+                        resolve(codigo);
+                    });
+                });
+
+                //Se cierra la interfaz de línea de lectura, después de obtener la entrada del usuario
+                readLine.close();
+
+                //Se crea una variable constante llamada listaProductos que almacenara los datos de datosArchivo
+                const listaProductos = datosArchivo;
+
+                /*Se declara una variable constante llamada productosFiltrados que utiliza la función filter para crear
+                 una nueva lista de productos llamada productosFiltrados */
+                const productosFiltrados = listaProductos.filter(
+                    /*Para cada elemento (producto), la función de filtro evalúa la condición (producto.codigoProducto !== codigoProducto). 
+                    Si esta condición es true, el elemento se incluye en la nueva lista productosFiltrados; si es false, el elemento se excluye. */
+                    (producto) => producto.codigoProducto !== codigoProducto
+                );
+
+                /*Se compara la longitud de productosFiltrados con la longitud de listaProductos. Si la longitud de 
+                productosFiltrados es menor que la longitud de listaProductos, significa que se eliminó al menos un producto. */
+                if (productosFiltrados.length < listaProductos.length) {
+                    //Se imprime un mensaje en la consola que indica que el producto ha sido borrado
+                    console.log(`\n♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
+                    console.log(`♦ `.red + `Producto eliminado con éxito.`.bgRed + ` ♦`.red);
+                    console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
+
+                    /*Se utiliza fs.writeFile para escribir la nueva lista de productos (productosFiltrados) en el archivo 
+                    'datos.json'.JSON.stringify(productosFiltrados, null, 2) convierte la lista filtrada en formato JSON 
+                    con una indentación de 2 espacios para mejorar la legibilidad. */
+                    fs.writeFile('datos.json', JSON.stringify(productosFiltrados, null, 2), (error) => {
+                        //Se maneja un callback para gestionar cualquier error que pueda ocurrir durante la escritura en el archivo.
+                        if (error) {
+                            console.error(error);
+                        }
+                    });
+                    //Si no hay ningún producto en la lista con el código ingresado, se imprime un mensaje en la consola que indica que no existe ese producto.
+                } else {
+                    console.log(`\n♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
+                    console.log(`♦ `.red + `El producto no existe en la lista.`.bgRed + ` ♦`.red);
+                    console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
+                }
+                //Se retorna el código del producto eliminado
+                return codigoProducto;
+                //Si la respuesta es NO, se imprime un mensaje en la consola que indica que no se eliminará ningún producto
+            } else if (respuestaEliminar === 'NO') {
+                console.log(`\n♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
+                console.log(`♦   `.red + `No se eliminó ningún producto.`.bgRed + `   ♦`.red);
+                console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
+                //Se cierra la interfaz de lectura después de imprimir el mensaje
+                readLine.close();
+                //Si el usuario elige no eliminar ningún producto, se retorna false.
+                return false;
+                /*Si la respuesta del usuario no es ni 'SI' ni 'NO', se imprime un mensaje de error indicando que la 
+                respuesta no es válida y se solicita al usuario que ingrese 'SI' o 'NO'.*/
+            } else {
+                console.log(`\nRespuesta no válida. Por favor, ingrese 'SI' o 'NO'.`.yellow);
+            }
+        }
+    }
+
+    //Se crea un método llamado preguntarNuevoProducto que es una función flecha asincrónica sin parámetros
+    preguntarNuevoProducto = async () => {
+        // Crea una interfaz de lectura en la consola para permitir la entrada del usuario
+        const readLine = require('readline').createInterface({
+            // Define el flujo de entrada, para leer la entrada del usuario desde la consola
+            input: process.stdin,
+            //Define el flujo de salida, para mostrar mensajes en la consola
+            output: process.stdout
+        });
+
+        //Se declara una variable llamada seguirIngresando que determina si se debe seguir ingresando productos o no
         let seguirIngresando = true;
 
-        // Bucle para continuar preguntando hasta que el usuario decida dejar de ingresar productos
+        /*Se usa un bucle while para continuar preguntando el ingreso de productos hasta que el usuario decida
+         dejar de ingresar productos*/
         while (seguirIngresando) {
             // Se espera la respuesta del usuario a la pregunta "¿Desea ingresar un nuevo producto?"
             const respuesta = await new Promise(resolve => {
-                readline.question(`\n¿Desea ingresar un nuevo producto? (SI/NO) `.red, resolve);
+                readLine.question(`\n¿Desea ingresar un nuevo producto? (SI/NO) `.red, resolve);
             });
 
-            // Si la respuesta es 'SI', se procede a solicitar los datos del nuevo producto
+            // Si la respuesta es 'SI', se convierte a mayúsculas sin espacios adicionales y se procede a solicitar los datos del nuevo producto
             if (respuesta.trim().toUpperCase() === 'SI') {
-                // Se define una función asíncrona llamada obtenerDato que toma un mensaje y una función de validación como parámetros
-                const obtenerDato = async (mensaje, validacion) => {
-                    // Se inicializa la variable 'dato' que almacenará la entrada del usuario
-                    let dato;
 
-                    // Bucle infinito para seguir preguntando hasta obtener un dato válido
-                    while (true) {
-                        // Se espera la respuesta del usuario a través de la interfaz de línea de lectura
-                        dato = await new Promise(resolve => {
-                            readline.question(`\n${mensaje} ►  `.green, resolve);
-                        });
+                //Se declaran las variables codigo, nombre, inventario, y precio
+                let codigo, nombre, inventario, precio;
 
-                        // Se verifica si la respuesta cumple con la validación proporcionada
-                        if (validacion(dato)) {
-                            // Si la respuesta es válida, se rompe el bucle y se devuelve el dato
-                            break;
-                        }
-                    }
+                //Se utiliza un bucle do-while para solicitar al usuario que ingrese el código del producto.
+                do {
+                    //Se utiliza new Promise para crear una promesa que se resolverá cuando se obtenga el código del producto
+                    codigo = await new Promise(resolve => {
+                        //Se utiliza readLine.question para realizar una pregunta al usuario y obtener una respuesta que resuelve la promesa
+                        readLine.question(`\nDigite el código del producto ►  `.green, codigo => resolve(codigo));
+                    });
+                    //El bucle se repite mientras el código está vacío.
+                } while (codigo === '');
 
-                    // Se devuelve el dato una vez que se ha obtenido una respuesta válida
-                    return dato;
-                };
+                //Se utiliza un bucle do-while para solicitar al usuario que ingrese el nombre del producto. 
+                do {
+                    //Se utiliza new Promise para crear una promesa que se resolverá cuando se obtenga el nombre del producto
+                    nombre = await new Promise(resolve => {
+                        //Se utiliza readLine.question para realizar una pregunta al usuario y obtener una respuesta que resuelve la promesa
+                        readLine.question(`\nDigite el nombre del producto ►  `.green, nombre => resolve(nombre));
+                    });
+                    //El bucle se repite mientras el nombre está vacío.
+                } while (nombre === '');
 
-                // Se obtienen los datos del nuevo producto
-                const codigo = await obtenerDato('Digite el código del producto', val => val.trim() !== '');
-                const nombre = await obtenerDato('Digite el nombre del producto', val => val.trim() !== '');
-                const inventario = await obtenerDato('Digite el inventario del producto', val => parseInt(val) > 0);
-                const precio = await obtenerDato('Digite el precio del producto', val => parseFloat(val) > 0);
+                //Se utiliza un bucle do-while para solicitar al usuario que ingrese el inventario del producto.
+                do {
+                    //Se utiliza new Promise para crear una promesa que se resolverá cuando se obtenga el inventario del producto
+                    inventario = await new Promise(resolve => {
+                        //Se utiliza readLine.question para realizar una pregunta al usuario y obtener una respuesta que resuelve la promesa
+                        readLine.question(`\nDigite el inventario del producto ►  `.green, inventario => resolve(parseInt(inventario)));
+                    });
+                    //El bucle se repite mientras el valor ingresado no es un número válido o es menor o igual a cero.
+                } while (isNaN(inventario) || inventario <= 0);
+
+                //Se utiliza un bucle do-while para solicitar al usuario que ingrese el precio del producto.
+                do {
+                    //Se utiliza new Promise para crear una promesa que se resolverá cuando se obtenga el precio del producto
+                    precio = await new Promise(resolve => {
+                        //Se utiliza readLine.question para realizar una pregunta al usuario y obtener una respuesta que resuelve la promesa
+                        readLine.question(`\nDigite el precio del producto ►  `.green, precio => resolve(parseFloat(precio)));
+                    });
+                    //El bucle se repite mientras el valor ingresado no es un número válido o es menor o igual a cero.
+                } while (isNaN(precio) || precio <= 0);
 
                 // Se crea una instancia de la clase Producto y se configuran sus propiedades
                 const producto = new Producto();
+
+                //Se configuran las propiedades de la instancia producto utilizando el método setter para obtener los valores de cada uno
                 producto.setCodigoProducto = codigo;
                 producto.setNombreProducto = nombre;
                 producto.setInventarioProducto = inventario;
                 producto.setPrecioProducto = precio;
 
-                // Se agrega el nuevo producto a la lista de productos
+                // Se agrega el nuevo producto a la lista de productos a través de .push
                 this.#listaProductos.push(producto);
 
                 // Se imprime un mensaje indicando que los datos se han guardado en datos.json
                 console.log(`\n♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.cyan);
                 console.log(`♦   `.cyan + `Datos guardados en datos.json`.bgCyan + `   ♦`.cyan);
-                console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦\n`.cyan);
+                console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.cyan);
 
+                //Si la respuesta es NO, se convierte a mayúsculas sin espacios adicionales y se rompe el ciclo
             } else if (respuesta.trim().toUpperCase() === 'NO') {
-                // Si la respuesta es 'NO', se establece que no se deben ingresar más productos
+                //La variable toma el valor de false al obtener una respuesta de no
                 seguirIngresando = false;
             } else {
                 // Si la respuesta no es ni 'SI' ni 'NO', se muestra un mensaje de error
@@ -363,7 +549,7 @@ class ProductosTienda {
         }
 
         // Se cierra la interfaz de línea de lectura
-        readline.close();
+        readLine.close();
 
         // Se llama a la función guardarProducto para almacenar los productos ingresados
         this.guardarProducto();
@@ -425,10 +611,10 @@ class CarritoCompras {
 
     // Se llama al constructor que inicializa los atributos de la clase
     constructor() {
-        this.nombreCliente = ' ';
-        this.numeroIdentificacion = '';
-        this.telefono = '';
-        this.productos = [];
+        this.#nombreCliente = ' ';
+        this.#numeroIdentificacion = '';
+        this.#telefono = '';
+        this.#productos = [];
     }
 
     //Se crea un método setter para establecer el valor del atributo #nombreCliente
@@ -466,154 +652,211 @@ class CarritoCompras {
         return this.#productos;
     }
 
-    // Se define una función asíncrona llamada preguntarNuevoPedido
+    //Se crea un método llamado preguntarNuevoProducto que es una función flecha asincrónica sin parámetros
     preguntarNuevoPedido = async () => {
-        // Se crea una interfaz de línea de lectura para gestionar la entrada/salida
+        // Crea una interfaz de lectura en la consola para permitir la entrada del usuario
         const readLine = require('readline').createInterface({
+            // Define el flujo de entrada, para leer la entrada del usuario desde la consola
             input: process.stdin,
+            //Define el flujo de salida, para mostrar mensajes en la consola
             output: process.stdout
         });
 
-        // Se lee el archivo 'datos.json' y se convierte su contenido a un objeto JSON
+        //Se declara una variable constante llamada datos que almacena el resultado de los datos leídos en el archivo y su conversión a un objeto JSON
         const datos = JSON.parse(fs.readFileSync('datos.json', 'utf-8'));
 
-        // Se espera la respuesta del usuario a la pregunta "¿Desea ingresar un nuevo pedido?"
+        /*Se utiliza readLine.question para hacer una pregunta al usuario sobre si desea ingresar un nuevo pedido.
+        La respuesta se almacena en la variable respuesta.*/
         const respuesta = await new Promise(resolve => {
             readLine.question(`\n¿Desea ingresar un nuevo pedido? (SI/NO) `.red, resolve);
         });
 
-        // Si la respuesta es 'SI', se procede a ingresar los detalles del pedido
+        /*Si la respuesta es 'si', se convierte a mayúsculas sin espacios adicionales y se procede a solicitar los 
+        datos del producto del pedido*/
         if (respuesta.trim().toUpperCase() === 'SI') {
+
+            //Se declara una variable llamada agregarMasProductos y se inicializa con un valor booleano de true
             let agregarMasProductos = true;
 
-            // Bucle para ingresar detalles de productos al pedido
+            /*Se usa un bucle while para continuar preguntando al usuario el ingreso de productos al pedido 
+            hasta que decida dejar de ingresar productos*/
             while (agregarMasProductos) {
-                let codigo;
+                //Se declaran las variables codigo, nombre, inventario, y precio
+                let codigo, nombre, unidades, precio;
+                //Se declara la variable inventarioEnArchivo que almacenará el inventario del producto en el archivo
                 let inventarioEnArchivo;
 
-                // Bucle para asegurarse de que el código del producto ingresado exista en el inventario
+                /*Se utiliza un bucle do-while que verifica que mientras código sea una cadena vacia se repetira el 
+                proceso hasta que el usuario ingrese un valor válido, que no este vacio*/
                 do {
-                    // Se solicita al usuario que ingrese el código del producto
-                    codigo = await new Promise(resolve => {
-                        readLine.question(`\nIngrese el código del producto ►  `.green, resolve);
+                    /*Se utiliza un bucle do-while para obtener un código de producto válido y verificar su existencia 
+                    en el inventario*/
+                    do {
+                        //Se utiliza new Promise para crear una promesa que se resolverá cuando se obtenga el código del producto
+                        codigo = await new Promise(resolve => {
+                            //Se utiliza readLine.question para realizar una pregunta al usuario y obtener una respuesta que resuelve la promesa
+                            readLine.question(`\nIngrese el código del producto ►  `.green, resolve);
+                        });
+
+                        /*Se toma la variable inventarioEnArchivo que contendra el elemento que cumpla con una condición.
+                        El método .find buscará un elemento dentro del array datos que contenga el mismo código
+                        que el que proporcionara el usuario*/
+                        inventarioEnArchivo = datos.find(producto => producto.codigoProducto === codigo);
+
+                        /*Se utiliza if para indicar que si el producto no se encuentra en el archivo se imprimirá en la 
+                        consola un mensaje informando al usuario que el producto con ese código no existe en el 
+                        inventario*/
+                        if (!inventarioEnArchivo) {
+                            console.log(`\nEl producto con código ${codigo} no existe en el inventario.`.yellow);
+                        }
+                        // Se utiliza while para que se repita el ciclo hasta que se ingrese un código válido y el producto exista en el inventario
+                    } while (!inventarioEnArchivo);
+                    //Se utiliza while para que se repita la pregunta mientras el código está vacío.
+                } while (codigo === '');
+
+                //Se utiliza un bucle do-while para obtener un nombre de producto válido, que no este vacio
+                do {
+                    //Se utiliza new Promise para crear una promesa que se resolverá cuando se obtenga el nombre del producto
+                    nombre = await new Promise(resolve => {
+                        //Se utiliza readLine.question para realizar una pregunta al usuario y obtener una respuesta que resuelve la promesa
+                        readLine.question(`Ingrese el nombre del producto ►  `.green, resolve);
                     });
+                    //Se utiliza while para que se repita la pregunta mientras el nombre está vacío.
+                } while (nombre === '');
 
-                    // Se busca el producto en el inventario a partir del código
-                    inventarioEnArchivo = datos.find(producto => producto.codigoProducto === codigo);
+                //Se utiliza un bucle do-while para obtener un número de unidades válido, que no este vacio o sea menor a cero
+                do {
+                    //Se utiliza new Promise para crear una promesa que se resolverá cuando se obtengan las unidades del producto
+                    unidades = await new Promise(resolve => {
+                        //Se utiliza readLine.question para realizar una pregunta al usuario y obtener una respuesta que resuelve la promesa
+                        readLine.question(`Ingrese las unidades del producto ►  `.green, resolve);
+                    });
+                    /*Mientras el número de unidades no sea un número o sea menor o igual a cero el ciclo se repetirá
+                    hasta que se ingrese un valor válido*/
+                } while (isNaN(unidades) || unidades <= 0);
 
-                    // Si el producto no existe en el inventario, se muestra un mensaje de error
-                    if (!inventarioEnArchivo) {
-                        console.log(`\nEl producto con código ${codigo} no existe en el inventario.`.yellow);
-                    }
-                } while (!inventarioEnArchivo);
-
-                // Si no hay suficientes unidades en inventario, se muestra un mensaje de advertencia
-                if (inventarioEnArchivo.inventarioProducto <= 0) {
-                    console.log(`\nNo hay suficientes unidades disponibles. Actualmente hay 0 unidades en inventario.`.yellow);
+                /*Se usa un if para verificar la cantidad de unidades que se encuentran disponibles en el inventario,
+                si el número de unidades en el  inventario es menor al solicitado por el usuario en el pedido, se 
+                imprimirá en la consola un mensaje que indica que no hay suficientes unidades*/
+                if (inventarioEnArchivo.inventarioProducto < unidades) {
+                    console.log(`\nNo hay suficientes unidades disponibles. Actualmente hay ${inventarioEnArchivo.inventarioProducto} unidades en inventario.`.yellow);
+                    //Si hay unidades suficientes se continua con el proceso de ingreso de pedido
                 } else {
-                    // Se solicita al usuario ingresar el nombre del producto
-                    const nombre = await new Promise(resolve => {
-                        readLine.question(`\nIngrese el nombre del producto ►   `.green, resolve);
+
+                    //Se utiliza un bucle do-while para obtener un precio válido, que no este vacio o sea menor a cero
+                    do {
+                        //Se utiliza new Promise para crear una promesa que se resolverá cuando se obtenga el precio del producto
+                        precio = await new Promise(resolve => {
+                            //Se utiliza readLine.question para realizar una pregunta al usuario y obtener una respuesta que resuelve la promesa
+                            readLine.question(`Ingrese el precio del producto ►  `.green, precio => resolve(parseFloat(precio)));
+                        });
+                        /*Mientras el precio no sea un número o sea menor o igual a cero el ciclo se repetirá
+                        hasta que se ingrese un valor válido*/
+                    } while (isNaN(precio) || precio <= 0);
+
+                    //Se descuentan las unidades pedidas por el usuario de la cantidad que contiene el inventario del producto
+                    inventarioEnArchivo.inventarioProducto -= unidades;
+
+                    /*Se utiliza writeFileSync para escribir el array actualizado (datos) en el archivo 'datos.json'. 
+                    Esto refleja la actualización del inventario después de la venta. */
+                    fs.writeFileSync('datos.json', JSON.stringify(datos, null, 2), 'utf-8');
+
+                    /*Se agrega un nuevo objeto al array #productos. Este array es una lista de productos que registrará
+                    los productos del pedido y que contiene el código, nombre, unidades y precio. */
+                    this.#productos.push({
+                        codigo: codigo,
+                        nombre: nombre,
+                        unidades: unidades,
+                        precio: precio,
                     });
 
-                    // Se solicita al usuario ingresar la cantidad de unidades del producto
-                    const unidades = await new Promise(resolve => {
-                        readLine.question(`\nIngrese las unidades del producto ►  `.green, resolve);
-                    });
-
-                    // Si la cantidad de unidades es inválida, se muestra un mensaje de error
-                    if (unidades <= 0) {
-                        console.log(`\nPor favor, ingrese un número válido de unidades.`.yellow);
-                    } else if (inventarioEnArchivo.inventarioProducto < unidades) {
-                        // Si no hay suficientes unidades disponibles, se muestra un mensaje de advertencia
-                        console.log(`\nNo hay suficientes unidades disponibles. Actualmente hay ${inventarioEnArchivo.inventarioProducto} unidades en inventario.`.yellow);
-                    } else {
-                        // Se solicita al usuario ingresar el precio del producto
-                        const precio = await new Promise(resolve => {
-                            readLine.question(`\nIngrese el precio del producto ►  `.green, resolve);
-                        });
-
-                        // Se actualiza el inventario restando las unidades vendidas
-                        inventarioEnArchivo.inventarioProducto -= unidades;
-
-                        // Se guarda el inventario actualizado en el archivo 'datos.json'
-                        fs.writeFileSync('datos.json', JSON.stringify(datos, null, 2), 'utf-8');
-
-                        // Se agrega el producto al pedido
-                        this.productos.push({
-                            codigo: codigo,
-                            nombre: nombre,
-                            unidades: unidades,
-                            precio: precio,
-                        });
-
-                        // Se imprime un mensaje de confirmación
-                        console.log(`\nPedido registrado correctamente. Unidades en inventario restantes: ${inventarioEnArchivo.inventarioProducto}.`.green);
-                    }
+                    /*Se imprime en la consola un mensaje indicando al usuario que el pedido fue registrado y la 
+                    cantidad de unidades que quedan en el inventario*/
+                    console.log(`\nPedido registrado correctamente. Unidades en inventario restantes: ${inventarioEnArchivo.inventarioProducto}.`.green);
                 }
-
-                // Se pregunta al usuario si desea agregar más productos al pedido
+                //Se utiliza new Promise para crear una promesa que se resolverá cuando se obtenga una respuesta del usuario
                 const respuestaAgregarMas = await new Promise(resolve => {
+                    //Se utiliza readLine.question para realizar una pregunta al usuario y obtener una respuesta que resuelve la promesa
                     readLine.question(`\n¿Desea ingresar más productos al pedido? (SI/NO) `.red, resolve);
                 });
-
-                // Si la respuesta no es 'SI', se termina el bucle de ingreso de productos
+                //Si la respuesta no es igual a 'SI', se termina el bucle de ingreso de productos
                 if (respuestaAgregarMas.trim().toUpperCase() !== 'SI') {
+                    //Si el usuario no desea agregar más productos, se establece la variable agregarMasProductos en false
                     agregarMasProductos = false;
                 }
             }
+            /*Si la respuesta es 'no', se convierte a mayúsculas sin espacios adicionales se establece que no se deben
+            ingresar más pedidos*/
         } else if (respuesta.trim().toUpperCase() === 'NO') {
-            // Si la respuesta es 'NO', se establece que no se deben ingresar más pedidos
-            seguirIngresando = false;
+
+            // Si la respuesta no es ni 'SI' ni 'NO', se muestra un mensaje de error indicando cual es la respuesta que se debe ingresar
         } else {
-            // Si la respuesta no es ni 'SI' ni 'NO', se muestra un mensaje de error
             console.log(`\nRespuesta no válida. Por favor, ingrese 'SI' o 'NO'.`.yellow);
         }
-
-        // Se cierra la interfaz de línea de lectura al salir del bucle principal
+        // Se cierra la interfaz de lectura al salir del bucle principal
         readLine.close();
-    };
-
-    //Se crea un nuevo método llamado imprimirFactura que es una función flecha de tipo asincronica sin parámetros
-    imprimirFactura = async () => {
-
-        /*Se declara un arreglo de tipo constante que contiene las propiedades nombreCliente, numeroIdentificacion
-             y telefono. Estas propiedades se asignarán a sus respectivos valores cuando la promesa que contiene 
-             await datosCliente(); sea resuelta */
-        const { nombreCliente, numeroIdentificacion, telefono } = await datosCliente();
-
-        /*Se imprime un encabezado con un titulo de factura, el nombre del cliente, el número de identificación
-        y el teléfono, y los encabezados de los elementos que componen la factura y la interfaz que se le añadio*/
-        console.log(`\n★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
-        console.log(`★                    `.cyan + `FACTURA DE COMPRA`.bgMagenta + `                       ★`.magenta)
-        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
-        console.log(`★              `.magenta + `Nombre del cliente: ${nombreCliente}`.cyan + `                ★`.magenta);
-        console.log(`★              `.magenta + `Identificación: ${numeroIdentificacion}`.cyan + `                ★`.magenta);
-        console.log(`★              `.magenta + `Teléfono: ${telefono}`.cyan + `                ★`.magenta);
-        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
-        console.log(`★   `.magenta + `Código |    Producto    | Cantidad |  Precio |  Total `.cyan + `   ★`.magenta);
-        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
-        //Se declara una variable llamada total con un valor inicial de 0
-        let total = 0;
-        //Se itera sobre cada producto del arreglo productos 
-        this.productos.forEach(producto => {
-            //Se declara una variable que guardara el valor subtotal de cada uno de los productos que el usuario solicite
-            const subtotal = producto.unidades * producto.precio;
-            //Se imprimen cada uno de los datos que el usuario ingreso a la hora de realizar el pedido
-            console.log(`★`.magenta + `    ${producto.codigo}    |    ${producto.nombre}    |    ${producto.unidades}    |  ${producto.precio}  |   ${subtotal} `.cyan + `★`.magenta);
-            //Se suma el subtotal de todos los productos añadidos al pedido y los guarda en la variable total
-            total += subtotal;
-        });
-        //Se imprime el valor total de la suma de todos los productos
-        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
-        console.log(`★                     `.magenta + `TOTAL: ${total}`.cyan + `                           ★`.magenta);
-        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
-
-        //Se imprime un mensaje en la consola agradeciendo la compra del cliente
-        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
-        console.log(`★                 `.magenta + `¡Gracias por su compra!`.cyan + `                    ★`.magenta);
-        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
     }
+
+    //Se crea un método llamado imprimirFactura que es una función flecha asincrónica sin parámetros
+    imprimirFactura = () => {
+        // Crea una interfaz de lectura en la consola para permitir la entrada del usuario
+        const readLine = require('readline').createInterface({
+            // Define el flujo de entrada, para leer la entrada del usuario desde la consola
+            input: process.stdin,
+            //Define el flujo de salida, para mostrar mensajes en la consola
+            output: process.stdout
+        });
+
+        //Se crea una nueva Promise que se resolverá cuando se obtenga una respuesta del usuario
+        return new Promise((resolve) => {
+
+            //Se utiliza readLine.question para realizar una pregunta al usuario y obtener el nombre del cliente
+            readLine.question(`\nDigite el nombre del cliente  ►  `.green, (nombreCliente) => {
+                //Se utiliza readLine.question para realizar una pregunta al usuario y obtener el número de identificación
+                readLine.question(`\nDigite el número de identificación  ►  `.green, (numeroIdentificacion) => {
+                    //Se utiliza readLine.question para realizar una pregunta al usuario y obtener el teléfono
+                    readLine.question(`\nDigite el teléfono del cliente  ►  `.green, (telefono) => {
+                        // Se cierra la interfaz de línea de lectura
+                        readLine.close();
+
+                        /*Se imprime en la consola un cuadro con un titulo y los respectivos datos que se solicitaron 
+                        del cliente, junto con la información de los productos que pidió el cliente*/
+                        console.log(`\n★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
+                        console.log(`★                    `.cyan + `FACTURA DE COMPRA`.bgMagenta + `                       ★`.magenta)
+                        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
+                        console.log(`★              `.magenta + `Nombre del cliente: ${nombreCliente}`.cyan + `                ★`.magenta);
+                        console.log(`★              `.magenta + `Identificación: ${numeroIdentificacion}`.cyan + `                ★`.magenta);
+                        console.log(`★              `.magenta + `Teléfono: ${telefono}`.cyan + `                ★`.magenta);
+                        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
+                        console.log(`★   `.magenta + `Código |    Producto    | Cantidad |  Precio |  Total `.cyan + `   ★`.magenta);
+                        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
+                        //Se declara una variable llamada total con un valor inicial de 0
+                        let total = 0;
+                        //Se itera sobre cada producto del arreglo productos 
+                        this.#productos.forEach(producto => {
+                            //Se declara una variable que guardara el valor subtotal de cada uno de los productos que el usuario solicite
+                            const subtotal = producto.unidades * producto.precio;
+                            //Se imprimen cada uno de los datos que el usuario ingreso a la hora de realizar el pedido
+                            console.log(`★`.magenta + `    ${producto.codigo}    |    ${producto.nombre}    |    ${producto.unidades}    |  ${producto.precio}  |   ${subtotal} `.cyan + `★`.magenta);
+                            //Se suma el subtotal de todos los productos añadidos al pedido y los guarda en la variable total
+                            total += subtotal;
+                        });
+                        //Se imprime el valor total de la suma de todos los productos
+                        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
+                        console.log(`★                     `.magenta + `TOTAL: ${total}`.cyan + `                           ★`.magenta);
+                        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
+
+                        //Se imprime un mensaje en la consola agradeciendo la compra del cliente
+                        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
+                        console.log(`★                 `.magenta + `¡Gracias por su compra!`.cyan + `                    ★`.magenta);
+                        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
+                        //Se resuelve la promesa externa cuando se haya impreso la factura
+                        resolve();
+                    })
+                });
+            });
+        });
+    };
 }
 
 // Exporta un objeto que contiene las clases utilizadas en el módulo app.js
