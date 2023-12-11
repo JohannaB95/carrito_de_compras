@@ -13,7 +13,7 @@ const main = async () => {
     // Limpia la consola antes de imprimir el menú principal
     console.clear();
 
-    // Se solicita imprimir un encabezado en la consola y que sea de color rojo, se añade diseño.
+    //Se solicita imprimir un encabezado en la consola y que sea de color rojo, se añade diseño.
     console.log(`\n★★★★★★★★★★★★★★★★★★★★★★`.red);
     console.log(`★   Menú Principal   ★`.red);
     console.log(`★★★★★★★★★★★★★★★★★★★★★★\n`.red);

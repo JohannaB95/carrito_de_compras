@@ -91,7 +91,7 @@ class ProductosTienda {
     }
 
     /*Leer los datos del archivo Json
-           Serializar para trabajar los datos como un arreglo de objetos de clase Producto*/
+    Serializar para trabajar los datos como un arreglo de objetos de clase Producto*/
     // Se crea un método llamado cargarArchivoProductos que es una función flecha sin parámetros
     cargarArchivoProductos = async () => {
 
@@ -142,7 +142,7 @@ class ProductosTienda {
         }
     }
 
-    //Se crea un método llamado mostrarProductos que es una función flecha asincrónica sin parámetros
+    //Se crea un método llamado mostrarProductos sin parámetros
     mostrarProductos() {
 
         /*Itera sobre cada producto en la lista y se obtienen los valores de cada uno de los atributos, luego se imprime 
