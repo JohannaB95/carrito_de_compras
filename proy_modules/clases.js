@@ -7,8 +7,9 @@ const fs = require('fs');
 //Se incluye el módulo path que permite gestionar rutas de archivos y directorios
 const path = require('path');
 
+//Se declara una constante llamada datosArchivo que almacena el archivo con los datos de los productos
 /*Se cargan los datos del archivo datos.json en la variable datosArchivo. Esto es posible debido al uso de require,
- que puede cargar archivos JSON en Node.js.*/
+que puede cargar archivos JSON en Node.js.*/
 const datosArchivo = require('../datos.json');
 
 //Se define la clase Producto
@@ -23,13 +24,13 @@ class Producto {
     // Se llama al constructor que inicializa los atributos de la clase, se ejecuta al crear una nueva instancia de Producto
     constructor() {
 
-        // Se inicializa el código del producto como un string vacio
+        // Se inicializa el código del producto con un string vacio
         this.#codigoProducto = ' ';
-        // Se inicializa el nombre del producto como un string vacio
+        // Se inicializa el nombre del producto con un string vacio
         this.#nombreProducto = ' ';
-        // Se inicializa la cantidad del inventario del producto como 0
+        // Se inicializa la cantidad del inventario del producto en 0
         this.#inventarioProducto = 0;
-        //Se inicializa el precio del producto como 0
+        //Se inicializa el precio del producto en 0
         this.#precioProducto = 0;
     }
 
@@ -80,21 +81,20 @@ class ProductosTienda {
     // Se declara un atributo privado llamado listaProductos
     #listaProductos;
 
-    // Constructor que inicializa el atributo #listaProductos como un arreglo vacío
+    //Constructor que inicializa el atributo #listaProductos con un arreglo vacío
     constructor() {
         this.#listaProductos = [];
     }
 
-    // Se crea un método getter para obtener la lista de productos de #listaProductos
+    //Se crea un método getter para obtener la lista de productos de #listaProductos
     get getListaProductos() {
         return this.#listaProductos;
     }
 
     /*Leer los datos del archivo Json
     Serializar para trabajar los datos como un arreglo de objetos de clase Producto*/
-    // Se crea un método llamado cargarArchivoProductos que es una función flecha sin parámetros
+    //Se crea un método llamado cargarArchivoProductos que es una función flecha sin parámetros
     cargarArchivoProductos = async () => {
-
 
         //Se crea una variable llamada contador que se inicia en 0
         let contador = 0;
@@ -105,7 +105,7 @@ class ProductosTienda {
             /*El parámetro objeto dentro de la función flecha en el forEach representa cada elemento individual 
             en el arreglo datosArchivo a medida que se itera.*/
             datosArchivo.forEach(objeto => {
-                //El contador aumentara cada vez +1
+                //El contador aumentara cada vez que se itere en +1
                 contador++;
 
                 // Se crea una nueva instancia de la clase Producto
@@ -142,17 +142,23 @@ class ProductosTienda {
         }
     }
 
-    //Se crea un método llamado mostrarProductos sin parámetros
+    //Se crea un método llamado mostrarProductos que es una función sin parámetros
     mostrarProductos() {
+        /*Se declara una constante llamada listaProductos y se inicializa con el resultado de aplicar el método map 
+        a this.getListaProductos. map recorre cada elemento de this.getListaProductos y devuelve un nuevo array. */
+        const listaProductos = this.getListaProductos.map(producto => ({
+            /*Se crea para cada producto una propiedad con su respectivo nombre y cuyo valor es el resultado de 
+            llamar al método de cada propiedad*/
+            Código: producto.getCodigoProducto,
+            Nombre: producto.getNombreProducto,
+            Inventario: producto.getInventarioProducto,
+            Precio: producto.getPrecioProducto,
+        }));
 
-        /*Itera sobre cada producto en la lista y se obtienen los valores de cada uno de los atributos, luego se imprime 
-         la información en la consola siguiendo el orden en el que se están especificando*/
-        this.getListaProductos.forEach(producto => {
-            console.log(`­♦    `.yellow + producto.getCodigoProducto + `     ­♦   `.yellow
-                + producto.getNombreProducto + `      ­♦   `.yellow +
-                +  producto.getInventarioProducto + `      ­♦   `.yellow +
-                +  producto.getPrecioProducto + `     ­♦   `.yellow);
-        })
+        /*Se utiliza console.table para mostrar la tabla en la consola. 
+        console.table espera un array de objetos, donde cada objeto representa una fila de la tabla y las claves 
+        del objeto representan los encabezados de las columnas.*/
+        console.table(listaProductos);
     }
 
     //Se crea un método llamado grabarCopiaRespaldo que es una función flecha asincrónica sin parámetros
@@ -168,25 +174,28 @@ class ProductosTienda {
 
         //Se declara una variable llamada respuesta sin valor inicial
         let respuesta;
-        //Se utiliza un bucle do-while que se encarga de repetir el proceso si la respuesta del usuario no es ni 'SI' ni 'NO'.
+        //Se utiliza un bucle do-while que se encarga de repetir el proceso si la respuesta del usuario no es ni si ni no.
         do {
             //Se utiliza una promesa para obtener la respuesta del usuario de manera asíncrona.
             respuesta = await new Promise(resolve => {
                 // Se utiliza la interfaz de línea de lectura para obtener la respuesta del usuario.
                 readLine.question(`\n¿Desea realizar una copia de respaldo? (SI/NO) `.red, (respuesta) => {
-                    // La respuesta se resuelve y se convierte a mayúsculas sin espacios adicionales.
+                    //La respuesta se resuelve y se convierte a mayúsculas sin espacios adicionales.
                     resolve(respuesta.trim().toUpperCase());
                 });
             });
 
-            //verifica si la respuesta del usuario (almacenada en la variable respuesta) es igual a la cadena 'SI'. Si es así, se ejecuta el bloque de código dentro del if.
+            /*Se verifica si la respuesta del usuario (almacenada en la variable respuesta) es igual a la cadena si. 
+            Si es así, se ejecuta el bloque de código dentro del if.*/
             if (respuesta === 'SI') {
-                //Se crea una constante llamada nombreArchivo que contiene el nombre del archivo que se va a leer, en este caso, 'datos.json'.
+                /*Se crea una constante llamada nombreArchivo que contiene el archivo que se va a leer, en este 
+                caso, 'datos.json'.*/
                 const nombreArchivo = 'datos.json';
 
                 /*Utiliza el método readFile del módulo fs para leer el contenido del archivo de manera asíncrona. 
                 Toma tres argumentos: el nombre del archivo, la codificación (en este caso, 'utf-8' para interpretar 
-                el archivo como texto) y una función de devolución de llamada que se ejecutará una vez que la operación de lectura se haya completado. */
+                el archivo como texto) y una función de devolución de llamada que se ejecutará una vez que la 
+                operación de lectura se haya completado. */
                 fs.readFile(nombreArchivo, 'utf-8', (err, data) => {
                     /*Si hay un error en la lectura del archivo, en este caso si el archivo no existe se imprimira un mensaje
                     de error en la consola y que indica que se debe dirigir a la opción de Reparación de datos*/
@@ -201,8 +210,9 @@ class ProductosTienda {
                     }
 
                     /*Se usa para eliminar espacios en blanco al inicio y al final de la cadena almacenada en la variable
-                    data. Luego, verifica si la cadena resultante es igual a una cadena vacía. Si el archivo está vacio se imprimira un mensaje
-                    de error en la consola y que indica que se debe dirigir a la opción de Reparación de datos*/
+                    data. Luego, verifica si la cadena resultante es igual a una cadena vacía. Si el archivo está vacio se 
+                    imprimira un mensaje de error en la consola y que indica que se debe dirigir a la opción de 
+                    Reparación de datos*/
                     if (data.trim() === '') {
                         console.log(`\n♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
                         console.log(`♦ `.red + `Error: El archivo ${nombreArchivo} está vacío o no existe`.bgRed + ` ♦`.red);
@@ -213,9 +223,10 @@ class ProductosTienda {
                         return;
                     }
 
-                    /*Se crea una variable llamada fecha en la que se almacenara la fecha actual en la que se realiza la copia de seguridad.
-                    Se obtiene la fecha actual en formato ISO utilizando new Date().toISOString().
-                    Luego, se utiliza split('T') para dividir la cadena en dos partes, obteniendo solo la parte de la fecha (sin la hora).*/
+                    /*Se crea una variable llamada fecha en la que se almacenara la fecha actual en la que se realiza
+                    la copia de seguridad. Se obtiene la fecha actual en formato ISO utilizando new Date().toISOString().
+                    Luego, se utiliza split('T') para dividir la cadena en dos partes, obteniendo solo la parte de la fecha 
+                    (sin la hora).*/
                     const fecha = new Date().toISOString().split('T')[0];
                     /*Se crea una variable de tipo constante llamada nuevoArchivo que crea un nuevo nombre de 
                     archivo para la copia de respaldo concatenando la cadena "datos_copia_", la fecha obtenida y la 
@@ -236,17 +247,17 @@ class ProductosTienda {
                     readLine.close();
                 });
 
-                //Si la respuesta del usuario es no, se imprimira un mensaje en la consola que indica que no se realizara la copia
+            //Si la respuesta del usuario es no, se imprimira un mensaje en la consola que indica que no se realizara la copia
             } else if (respuesta === 'NO') {
                 console.log(`\nNo se realizará una copia de respaldo.`.yellow);
                 //Se cierra la interfaz de lectura después de imprimir el mensaje
                 readLine.close();
                 /*Si la respuesta no es ni SI ni NO, sino otra respuesta se imprimira un mensaje en la consola indicando
-                 al usuario que debe ingresar como respuesta un si o un no*/
+                al usuario que debe ingresar como respuesta un si o un no*/
             } else {
                 console.log(`\nRespuesta no válida. Por favor, ingrese 'SI' o 'NO'.`.yellow);
             }
-            //La condición del bucle (while) verifica si la respuesta no es 'SI' y no es 'NO'.
+            //La condición del bucle (while) verifica si la respuesta no es si y no es no.
         } while (respuesta !== 'SI' && respuesta !== 'NO');
 
         // Cierra la interfaz de lectura aquí si ha terminado el bucle
@@ -267,7 +278,7 @@ class ProductosTienda {
         //Se declara una variable constante llamada ruta que almacenara la ruta del directorio superior al directorio actual
         const ruta = path.join(__dirname, '..');
 
-        //Se inicia un bucle while. El bucle se ejecutará repetidamente ya que la condición siempre es true.
+        //Se inicia un bucle while.
         while (true) {
             /*Se utiliza una promesa para manejar la entrada del usuario de manera asíncrona. La función 
           readLine.question solicita al usuario que ingrese una respuesta a la pregunta*/
@@ -278,14 +289,14 @@ class ProductosTienda {
                 });
             });
 
-            /*Se verifica si la respuesta del usuario (almacenada en la variable respuestaRecuperar) es igual a la cadena 'SI'. 
+            /*Se verifica si la respuesta del usuario (almacenada en la variable respuestaRecuperar) es igual a la cadena si. 
             Si es así, se ejecuta el bloque de código dentro del if.*/
             if (respuestaRecuperar === 'SI') {
-                /*Se crea una variable constante llamada archivos que almacena el resultado de la lectura de la lista
-                de archivos en el directorio especificado por 'ruta'*/
+                /*Se crea una constante llamada archivos que almacena el resultado de la lectura de la lista de 
+                archivos en el directorio especificado por 'ruta'*/
                 const archivos = fs.readdirSync(ruta);
 
-                /*Se crea una variable constante llamada copiasDisponibles que almacena el resultado de la lectura de la lista
+                /*Se crea una constante llamada copiasDisponibles que almacena el resultado de la lectura de la lista
                de archivos en el directorio especificado y filtra los archivos para encontrar solo aquellos que comienzan
                con 'datos_copia_' y terminan con '.json'. Esto debería identificar las copias de respaldo en el directorio.*/
                 const copiasDisponibles = archivos.filter(file => file.startsWith('datos_copia_') && file.endsWith('.json'));
@@ -302,7 +313,7 @@ class ProductosTienda {
                     console.log(`\nLas siguientes copias de seguridad están disponibles:\n`.green);
                     /*Se inicia un bucle forEach en el array copiasDisponibles. Por cada elemento del array, se ejecutará 
                     la función proporcionada como argumento a forEach. La función toma dos parámetros, file e index.
-                    file representa el nombre de cada archivo y index es el índice del elemento en el array. */
+                    file representa el nombre de cada archivo e index es el índice del elemento en el array. */
                     copiasDisponibles.forEach((file, index) => {
                         //Se indica imprimir en la consola el indice de la copia de seguridad más el nombre de cada archivo
                         console.log(`${index + 1}. ${file}`);
@@ -315,7 +326,8 @@ class ProductosTienda {
                             resolve(index);
                         });
                     });
-                    /*Se utiliza copiasDisponibles[indexSeleccionado - 1] para obtener el nombre del archivo seleccionado. 
+                    /*Se declara una constante llamada selectedFile y se utiliza copiasDisponibles[indexSeleccionado - 1] 
+                    para obtener el nombre del archivo seleccionado. 
                     Se resta 1 del índice para ajustar el valor ingresado por el usuario al índice del array.*/
                     const selectedFile = copiasDisponibles[indexSeleccionado - 1];
                     //Se verifica si selectedFile tiene un valor válido. Si no es válido, se imprime un mensaje de "Selección no válida"
@@ -334,7 +346,7 @@ class ProductosTienda {
                         cadena JSON con formato, utilizando espaciado de 2.*/
                         fs.writeFileSync('datos.json', JSON.stringify(JSON.parse(datos), null, 2));
 
-                        //Se imprime un mensaje qe indica que los datos se han guardado en el archivo
+                        //Se imprime un mensaje que indica que los datos se han guardado en el archivo
                         console.log(`\n♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
                         console.log(`♦ `.red + `Los datos se han guardado en el archivo datos.json.`.bgRed + ` ♦`.red);
                         console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
@@ -346,22 +358,21 @@ class ProductosTienda {
                         return JSON.parse(datos);
                     }
                 }
-                //Si la respuesta del usuario es 'NO', se imprime un mensaje indicando que no se realizará la recuperación de datos.
+                //Si la respuesta del usuario es no, se imprime un mensaje indicando que no se realizará la recuperación de datos.
             } else if (respuestaRecuperar === 'NO') {
                 console.log(`\nNo se realizará la recuperación de datos.`.yellow);
                 //Se cierra la interfaz de lectura
                 readLine.close();
                 //La función devuelve false para indicar que no se realizará la recuperación de datos.
                 return false;
-                /*Si la respuesta del usuario no es ni 'SI' ni 'NO', se imprime un mensaje de error indicando que la 
-                respuesta no es válida y se solicita al usuario que ingrese 'SI' o 'NO'.*/
+                /*Si la respuesta del usuario no es ni si ni no, se imprime un mensaje de error indicando que la 
+                respuesta no es válida y se solicita al usuario que ingrese si o no.*/
                 //No se cierra la interfaz de línea de lectura en este caso, ya que se espera que el usuario proporcione una respuesta válida.
             } else {
                 console.log(`\nRespuesta no válida. Por favor, ingrese 'SI' o 'NO'.`.yellow);
             }
         }
     };
-
 
     //Se crea un método llamado borrarProducto que es una función flecha asincrónica sin parámetros
     borrarProducto = async () => {
@@ -376,7 +387,7 @@ class ProductosTienda {
         //Se declara una variable llamada respuestaEliminar sin valor inicial
         let respuestaEliminar;
 
-        //Se inicia un bucle while. El bucle se ejecutará repetidamente ya que la condición siempre es true.
+        //Se inicia un bucle while.
         while (true) {
             //Se utiliza una promesa para obtener la respuesta del usuario de manera asíncrona.
             respuestaEliminar = await new Promise(resolve => {
@@ -386,14 +397,15 @@ class ProductosTienda {
                     resolve(respuesta.trim().toUpperCase());
                 });
             });
-            /*Se verifica si la respuesta del usuario (almacenada en la variable respuestaEliminar) es igual a la cadena 'SI'. Si 
+            /*Se verifica si la respuesta del usuario (almacenada en la variable respuestaEliminar) es igual a la cadena si. Si 
             es así, se ejecuta el bloque de código dentro del if.*/
             if (respuestaEliminar === 'SI') {
-                /*se utiliza una Promise para esperar la entrada del usuario mediante la función readLine.question.
+                /*Se utiliza una Promise para esperar la entrada del usuario mediante la función readLine.question.
                 El código del producto ingresado por el usuario se almacena en la variable codigoProducto.*/
                 const codigoProducto = await new Promise(resolve => {
                     readLine.question(`\nDigite el código del producto: `.green, (codigo) => {
-                        //Se resulve el valor de la promesa, mediante la entrada que realiza el usuario, es decir el código del producto
+                        /*Se resulve el valor de la promesa, mediante la entrada que realiza el usuario, es decir el código
+                        del producto*/
                         resolve(codigo);
                     });
                 });
@@ -405,10 +417,12 @@ class ProductosTienda {
                 const listaProductos = datosArchivo;
 
                 /*Se declara una variable constante llamada productosFiltrados que utiliza la función filter para crear
-                 una nueva lista de productos llamada productosFiltrados */
+                una nueva lista de productos llamada productosFiltrados */
                 const productosFiltrados = listaProductos.filter(
-                    /*Para cada elemento (producto), la función de filtro evalúa la condición (producto.codigoProducto !== codigoProducto). 
-                    Si esta condición es true, el elemento se incluye en la nueva lista productosFiltrados; si es false, el elemento se excluye. */
+                    /*Para cada elemento (producto), la función de filtro evalúa la condición (producto.codigoProducto 
+                    !== codigoProducto). 
+                    Si esta condición es true, el elemento se incluye en la nueva lista productosFiltrados; si es false, 
+                    el elemento se excluye. */
                     (producto) => producto.codigoProducto !== codigoProducto
                 );
 
@@ -424,12 +438,13 @@ class ProductosTienda {
                     'datos.json'.JSON.stringify(productosFiltrados, null, 2) convierte la lista filtrada en formato JSON 
                     con una indentación de 2 espacios para mejorar la legibilidad. */
                     fs.writeFile('datos.json', JSON.stringify(productosFiltrados, null, 2), (error) => {
-                        //Se maneja un callback para gestionar cualquier error que pueda ocurrir durante la escritura en el archivo.
+                        //Se maneja un if para gestionar cualquier error que pueda ocurrir durante la escritura en el archivo.
                         if (error) {
                             console.error(error);
                         }
                     });
-                    //Si no hay ningún producto en la lista con el código ingresado, se imprime un mensaje en la consola que indica que no existe ese producto.
+                    /*Si no hay ningún producto en la lista con el código ingresado, se imprime un mensaje en la 
+                    consola que indica que no existe ese producto.*/
                 } else {
                     console.log(`\n♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.red);
                     console.log(`♦ `.red + `El producto no existe en la lista.`.bgRed + ` ♦`.red);
@@ -446,14 +461,14 @@ class ProductosTienda {
                 readLine.close();
                 //Si el usuario elige no eliminar ningún producto, se retorna false.
                 return false;
-                /*Si la respuesta del usuario no es ni 'SI' ni 'NO', se imprime un mensaje de error indicando que la 
-                respuesta no es válida y se solicita al usuario que ingrese 'SI' o 'NO'.*/
+                /*Si la respuesta del usuario no es ni si ni no, se imprime un mensaje de error indicando que la 
+                respuesta no es válida y se solicita al usuario que ingrese si o no.*/
             } else {
                 console.log(`\nRespuesta no válida. Por favor, ingrese 'SI' o 'NO'.`.yellow);
             }
         }
     }
-
+ 
     //Se crea un método llamado preguntarNuevoProducto que es una función flecha asincrónica sin parámetros
     preguntarNuevoProducto = async () => {
         // Crea una interfaz de lectura en la consola para permitir la entrada del usuario
@@ -464,18 +479,22 @@ class ProductosTienda {
             output: process.stdout
         });
 
-        //Se declara una variable llamada seguirIngresando que determina si se debe seguir ingresando productos o no
+        /*Se declara una variable llamada seguirIngresando que se inicializa en true que determina si se debe 
+        seguir ingresando productos o no.*/
         let seguirIngresando = true;
 
         /*Se usa un bucle while para continuar preguntando el ingreso de productos hasta que el usuario decida
-         dejar de ingresar productos*/
+        dejar de ingresar productos*/
         while (seguirIngresando) {
-            // Se espera la respuesta del usuario a la pregunta "¿Desea ingresar un nuevo producto?"
+            //Se espera la respuesta del usuario a la pregunta "¿Desea ingresar un nuevo producto?"
             const respuesta = await new Promise(resolve => {
+                /*Se utiliza readLine.question para realizar una pregunta al usuario y obtener una respuesta que 
+                resuelve la promesa*/
                 readLine.question(`\n¿Desea ingresar un nuevo producto? (SI/NO) `.red, resolve);
             });
 
-            // Si la respuesta es 'SI', se convierte a mayúsculas sin espacios adicionales y se procede a solicitar los datos del nuevo producto
+            /*Si la respuesta es si, se convierte a mayúsculas sin espacios adicionales y se procede a solicitar los 
+            datos del nuevo producto.*/
             if (respuesta.trim().toUpperCase() === 'SI') {
 
                 //Se declaran las variables codigo, nombre, inventario, y precio
@@ -483,29 +502,47 @@ class ProductosTienda {
 
                 //Se utiliza un bucle do-while para solicitar al usuario que ingrese el código del producto.
                 do {
+
                     //Se utiliza new Promise para crear una promesa que se resolverá cuando se obtenga el código del producto
                     codigo = await new Promise(resolve => {
-                        //Se utiliza readLine.question para realizar una pregunta al usuario y obtener una respuesta que resuelve la promesa
+                        /*Se utiliza readLine.question para realizar una pregunta al usuario y obtener una respuesta que 
+                        resuelve la promesa*/
                         readLine.question(`\nDigite el código del producto ►  `.green, codigo => resolve(codigo));
                     });
-                    //El bucle se repite mientras el código está vacío.
-                } while (codigo === '');
+
+                    /*Se utiliza un if con una condición que indica que si alguno de los códigos de la lista de productos
+                    coincide con el código ingresado por el usuario, se imprime en la consola un mensaje indicando 
+                    que ese código ya existe y que ingrese uno diferente*/
+                    if (this.getListaProductos.some(producto => producto.getCodigoProducto === codigo)) {
+                        console.log(`\nEl código ingresado ya existe, ingrese uno diferente`.magenta);
+                    }
+                    /*El bucle se repite mientras que el valor ingresado este vacio, coincida con uno de los códigos que
+                    ya se encuentra en la lista de productos o no sea un número*/
+                } while (codigo === '' || this.getListaProductos.some(producto => producto.getCodigoProducto
+                    === codigo) || isNaN(codigo));
 
                 //Se utiliza un bucle do-while para solicitar al usuario que ingrese el nombre del producto. 
                 do {
                     //Se utiliza new Promise para crear una promesa que se resolverá cuando se obtenga el nombre del producto
                     nombre = await new Promise(resolve => {
-                        //Se utiliza readLine.question para realizar una pregunta al usuario y obtener una respuesta que resuelve la promesa
-                        readLine.question(`\nDigite el nombre del producto ►  `.green, nombre => resolve(nombre));
+                        /*Se utiliza readLine.question para realizar una pregunta al usuario y obtener una respuesta que
+                        resuelve la promesa*/
+                        readLine.question(`\nDigite el nombre del producto ►  `.green, nombre => resolve(nombre[0]
+                            .toUpperCase() + nombre.substring(1).toLowerCase()));
                     });
-                    //El bucle se repite mientras el nombre está vacío.
-                } while (nombre === '');
+
+                    //El bucle se repite mientras el nombre está vacío o el valor ingresado sea diferente a letras
+                    /*Se utiliza la expresión regular /^[a-zA-Z\s]+$/ para validar que el nombre solo contiene letras 
+                    (mayúsculas o minúsculas) y espacios.*/
+                } while (nombre === '' || !/^[a-zA-Z\s]+$/.test(nombre.trim()));
 
                 //Se utiliza un bucle do-while para solicitar al usuario que ingrese el inventario del producto.
                 do {
+
                     //Se utiliza new Promise para crear una promesa que se resolverá cuando se obtenga el inventario del producto
                     inventario = await new Promise(resolve => {
-                        //Se utiliza readLine.question para realizar una pregunta al usuario y obtener una respuesta que resuelve la promesa
+                        /*Se utiliza readLine.question para realizar una pregunta al usuario y obtener una respuesta que 
+                        resuelve la promesa.*/
                         readLine.question(`\nDigite el inventario del producto ►  `.green, inventario => resolve(parseInt(inventario)));
                     });
                     //El bucle se repite mientras el valor ingresado no es un número válido o es menor o igual a cero.
@@ -543,7 +580,7 @@ class ProductosTienda {
                 //La variable toma el valor de false al obtener una respuesta de no
                 seguirIngresando = false;
             } else {
-                // Si la respuesta no es ni 'SI' ni 'NO', se muestra un mensaje de error
+                // Si la respuesta no es ni si ni no, se muestra un mensaje de error
                 console.log(`\nRespuesta no válida. Por favor, ingrese 'SI' o 'NO'.`.yellow);
             }
         }
@@ -556,8 +593,8 @@ class ProductosTienda {
     };
 
     /*Escribir datos en un archivo almacenado en unidad
-        Deserializar para convertir un arreglo de objetos de clase en cadena Json
-        Se crea un método llamado guardarProducto*/
+    Deserializar para convertir un arreglo de objetos de clase en cadena Json
+    Se crea un método llamado guardarProducto*/
     guardarProducto() {
 
         /*Se usa el método push() para agregar uno o más elementos al final del arreglo. En este caso, se agrega
@@ -570,7 +607,7 @@ class ProductosTienda {
         asigna a la variable instanciaClaseAObjetos. El objeto devuelto contiene una propiedad con el nombre 
         de la clave producto. */
         const instanciaClaseAObjetos = this.#listaProductos.map(producto => {
-            // Mapea cada objeto de clase a un objeto de JavaScript con claves específicas
+            //Mapea cada objeto de clase a un objeto de JavaScript con claves específicas
             //Devuelve un objeto con las propiedades del producto
             return {
                 /*Asigna el valor de la propiedad codigoProducto del objeto producto a la clave codigoProducto 
@@ -665,22 +702,21 @@ class CarritoCompras {
         //Se declara una variable constante llamada datos que almacena el resultado de los datos leídos en el archivo y su conversión a un objeto JSON
         const datos = JSON.parse(fs.readFileSync('datos.json', 'utf-8'));
 
-        /*Se utiliza readLine.question para hacer una pregunta al usuario sobre si desea ingresar un nuevo pedido.
-        La respuesta se almacena en la variable respuesta.*/
-        const respuesta = await new Promise(resolve => {
-            readLine.question(`\n¿Desea ingresar un nuevo pedido? (SI/NO) `.red, resolve);
-        });
+        //Se declara una variable llamada agregarMasProductos y se inicializa con un valor booleano de true
+        let agregarMasProductos = true;
 
-        /*Si la respuesta es 'si', se convierte a mayúsculas sin espacios adicionales y se procede a solicitar los 
-        datos del producto del pedido*/
-        if (respuesta.trim().toUpperCase() === 'SI') {
+        /*Se usa un bucle while para continuar preguntando al usuario el ingreso de productos al pedido 
+        hasta que decida dejar de ingresar productos*/
+        while (agregarMasProductos) {
+            /*Se utiliza readLine.question para hacer una pregunta al usuario sobre si desea ingresar un nuevo pedido.
+            La respuesta se almacena en la variable respuesta.*/
+            const respuesta = await new Promise(resolve => {
+                readLine.question(`\n¿Desea ingresar un pedido? (SI/NO) `.red, resolve);
+            });
 
-            //Se declara una variable llamada agregarMasProductos y se inicializa con un valor booleano de true
-            let agregarMasProductos = true;
-
-            /*Se usa un bucle while para continuar preguntando al usuario el ingreso de productos al pedido 
-            hasta que decida dejar de ingresar productos*/
-            while (agregarMasProductos) {
+            /*Si la respuesta es 'si', se convierte a mayúsculas sin espacios adicionales y se procede a solicitar los 
+            datos del producto del pedido*/
+            if (respuesta.trim().toUpperCase() === 'SI') {
                 //Se declaran las variables codigo, nombre, inventario, y precio
                 let codigo, nombre, unidades, precio;
                 //Se declara la variable inventarioEnArchivo que almacenará el inventario del producto en el archivo
@@ -719,86 +755,78 @@ class CarritoCompras {
                     //Se utiliza new Promise para crear una promesa que se resolverá cuando se obtenga el nombre del producto
                     nombre = await new Promise(resolve => {
                         //Se utiliza readLine.question para realizar una pregunta al usuario y obtener una respuesta que resuelve la promesa
-                        readLine.question(`Ingrese el nombre del producto ►  `.green, resolve);
+                        readLine.question(`\nIngrese el nombre del producto ►  `.green, nombre => resolve(nombre[0]
+                            .toUpperCase() + nombre.substring(1).toLowerCase()));
                     });
-                    //Se utiliza while para que se repita la pregunta mientras el nombre está vacío.
-                } while (nombre === '');
+                    /*Se utiliza while para que se repita la pregunta mientras el valor este vacio o sea un caracter 
+                    diferente a vocales o consonantes*/
+                } while (nombre === '' || !/^[a-zA-Z\s]+$/.test(nombre.trim()));
 
                 //Se utiliza un bucle do-while para obtener un número de unidades válido, que no este vacio o sea menor a cero
                 do {
                     //Se utiliza new Promise para crear una promesa que se resolverá cuando se obtengan las unidades del producto
                     unidades = await new Promise(resolve => {
                         //Se utiliza readLine.question para realizar una pregunta al usuario y obtener una respuesta que resuelve la promesa
-                        readLine.question(`Ingrese las unidades del producto ►  `.green, resolve);
+                        readLine.question(`\nIngrese las unidades del producto ►  `.green, resolve);
                     });
-                    /*Mientras el número de unidades no sea un número o sea menor o igual a cero el ciclo se repetirá
-                    hasta que se ingrese un valor válido*/
-                } while (isNaN(unidades) || unidades <= 0);
-
-                /*Se usa un if para verificar la cantidad de unidades que se encuentran disponibles en el inventario,
+                    /*Se usa un if para verificar la cantidad de unidades que se encuentran disponibles en el inventario,
                 si el número de unidades en el  inventario es menor al solicitado por el usuario en el pedido, se 
                 imprimirá en la consola un mensaje que indica que no hay suficientes unidades*/
-                if (inventarioEnArchivo.inventarioProducto < unidades) {
-                    console.log(`\nNo hay suficientes unidades disponibles. Actualmente hay ${inventarioEnArchivo.inventarioProducto} unidades en inventario.`.yellow);
-                    //Si hay unidades suficientes se continua con el proceso de ingreso de pedido
-                } else {
+                    if (inventarioEnArchivo.inventarioProducto < unidades) {
+                        console.log(`\nNo hay suficientes unidades disponibles. Actualmente hay ${inventarioEnArchivo.
+                            inventarioProducto} unidades en inventario.`.yellow);
+                    }
+                    /*Mientras el número de unidades no sea un número, sea menor o igual a cero o el número de 
+                    unidades solicitado sea superior al contenido en el inventarioel ciclo se repetirá hasta que se 
+                    ingrese un valor válido*/
+                } while (isNaN(unidades) || unidades <= 0 || unidades > inventarioEnArchivo.inventarioProducto);
 
-                    //Se utiliza un bucle do-while para obtener un precio válido, que no este vacio o sea menor a cero
-                    do {
-                        //Se utiliza new Promise para crear una promesa que se resolverá cuando se obtenga el precio del producto
-                        precio = await new Promise(resolve => {
-                            //Se utiliza readLine.question para realizar una pregunta al usuario y obtener una respuesta que resuelve la promesa
-                            readLine.question(`Ingrese el precio del producto ►  `.green, precio => resolve(parseFloat(precio)));
-                        });
-                        /*Mientras el precio no sea un número o sea menor o igual a cero el ciclo se repetirá
-                        hasta que se ingrese un valor válido*/
-                    } while (isNaN(precio) || precio <= 0);
-
-                    //Se descuentan las unidades pedidas por el usuario de la cantidad que contiene el inventario del producto
-                    inventarioEnArchivo.inventarioProducto -= unidades;
-
-                    /*Se utiliza writeFileSync para escribir el array actualizado (datos) en el archivo 'datos.json'. 
-                    Esto refleja la actualización del inventario después de la venta. */
-                    fs.writeFileSync('datos.json', JSON.stringify(datos, null, 2), 'utf-8');
-
-                    /*Se agrega un nuevo objeto al array #productos. Este array es una lista de productos que registrará
-                    los productos del pedido y que contiene el código, nombre, unidades y precio. */
-                    this.#productos.push({
-                        codigo: codigo,
-                        nombre: nombre,
-                        unidades: unidades,
-                        precio: precio,
+                //Se utiliza un bucle do-while para obtener un precio válido, que no este vacio o sea menor a cero
+                do {
+                    //Se utiliza new Promise para crear una promesa que se resolverá cuando se obtenga el precio del producto
+                    precio = await new Promise(resolve => {
+                        //Se utiliza readLine.question para realizar una pregunta al usuario y obtener una respuesta que resuelve la promesa
+                        readLine.question(`\nIngrese el precio del producto ►  `.green, precio => resolve(parseFloat(precio)));
                     });
+                    /*Mientras el precio no sea un número o sea menor o igual a cero el ciclo se repetirá
+                    hasta que se ingrese un valor válido*/
+                } while (isNaN(precio) || precio <= 0);
 
-                    /*Se imprime en la consola un mensaje indicando al usuario que el pedido fue registrado y la 
-                    cantidad de unidades que quedan en el inventario*/
-                    console.log(`\nPedido registrado correctamente. Unidades en inventario restantes: ${inventarioEnArchivo.inventarioProducto}.`.green);
-                }
-                //Se utiliza new Promise para crear una promesa que se resolverá cuando se obtenga una respuesta del usuario
-                const respuestaAgregarMas = await new Promise(resolve => {
-                    //Se utiliza readLine.question para realizar una pregunta al usuario y obtener una respuesta que resuelve la promesa
-                    readLine.question(`\n¿Desea ingresar más productos al pedido? (SI/NO) `.red, resolve);
+                //Se descuentan las unidades pedidas por el usuario de la cantidad que contiene el inventario del producto
+                inventarioEnArchivo.inventarioProducto -= unidades;
+
+                /*Se utiliza writeFileSync para escribir el array actualizado (datos) en el archivo 'datos.json'. 
+                Esto refleja la actualización del inventario después de la venta. */
+                fs.writeFileSync('datos.json', JSON.stringify(datos, null, 2), 'utf-8');
+
+                /*Se agrega un nuevo objeto al array #productos. Este array es una lista de productos que registrará
+                los productos del pedido y que contiene el código, nombre, unidades y precio. */
+                this.#productos.push({
+                    codigo: codigo,
+                    nombre: nombre,
+                    unidades: unidades,
+                    precio: precio,
                 });
-                //Si la respuesta no es igual a 'SI', se termina el bucle de ingreso de productos
-                if (respuestaAgregarMas.trim().toUpperCase() !== 'SI') {
-                    //Si el usuario no desea agregar más productos, se establece la variable agregarMasProductos en false
-                    agregarMasProductos = false;
-                }
-            }
-            /*Si la respuesta es 'no', se convierte a mayúsculas sin espacios adicionales se establece que no se deben
-            ingresar más pedidos*/
-        } else if (respuesta.trim().toUpperCase() === 'NO') {
 
-            // Si la respuesta no es ni 'SI' ni 'NO', se muestra un mensaje de error indicando cual es la respuesta que se debe ingresar
-        } else {
-            console.log(`\nRespuesta no válida. Por favor, ingrese 'SI' o 'NO'.`.yellow);
+                /*Se imprime en la consola un mensaje indicando al usuario que el pedido fue registrado y la 
+                cantidad de unidades que quedan en el inventario*/
+                console.log(`\nPedido registrado correctamente. Unidades en inventario restantes: ${inventarioEnArchivo.inventarioProducto}.`.green);
+
+                /*Si la respuesta es 'no', se convierte a mayúsculas sin espacios adicionales se establece que no se deben
+                ingresar más pedidos*/
+            } else if (respuesta.trim().toUpperCase() === 'NO') {
+                agregarMasProductos = false;
+                // Si la respuesta no es ni 'SI' ni 'NO', se muestra un mensaje de error indicando cual es la respuesta que se debe ingresar
+            } else {
+                console.log(`\nRespuesta no válida. Por favor, ingrese 'SI' o 'NO'.`.yellow);
+            }
         }
         // Se cierra la interfaz de lectura al salir del bucle principal
         readLine.close();
     }
 
     //Se crea un método llamado imprimirFactura que es una función flecha asincrónica sin parámetros
-    imprimirFactura = () => {
+    imprimirFactura = async () => {
         // Crea una interfaz de lectura en la consola para permitir la entrada del usuario
         const readLine = require('readline').createInterface({
             // Define el flujo de entrada, para leer la entrada del usuario desde la consola
@@ -806,56 +834,77 @@ class CarritoCompras {
             //Define el flujo de salida, para mostrar mensajes en la consola
             output: process.stdout
         });
+        
+        //Se declaran las variables de nombreCliente, numeroIdentificacion y telefono
+        let nombreCliente, numeroIdentificacion, telefono;
 
-        //Se crea una nueva Promise que se resolverá cuando se obtenga una respuesta del usuario
-        return new Promise((resolve) => {
+        //Se utiliza un bucle do-while para obtener y verificar que el usuario ingrese un nombre válido
+        do {
+            //Se utiliza new Promise para crear una promesa que se resolverá cuando se obtenga el nombre del cliente
+            nombreCliente = await new Promise(resolve => {
+                //Se utiliza readLine.question para realizar una pregunta al usuario y obtener el nombre del cliente
+                readLine.question(`\nDigite el nombre del cliente  ►  `.green, nombreCliente => resolve(nombreCliente[0]
+                    .toUpperCase() + nombreCliente.substring(1).toLowerCase()))
+            })
+            /*La pregunta se seguirá ejecutando mientras el nombre del cliente este vacio y no sean caracteres 
+            como consonantes y vocales*/
+        } while (nombreCliente === '' || !/^[a-zA-Z\s]+$/.test(nombreCliente.trim()));
 
-            //Se utiliza readLine.question para realizar una pregunta al usuario y obtener el nombre del cliente
-            readLine.question(`\nDigite el nombre del cliente  ►  `.green, (nombreCliente) => {
+        /*Se utiliza un bucle do-while para obtener y verificar que el usuario ingrese un número de identificación
+        válido*/
+        do {
+            //Se utiliza new Promise para crear una promesa que se resolverá cuando se obtenga el número de identificación
+            numeroIdentificacion = await new Promise(resolve => {
                 //Se utiliza readLine.question para realizar una pregunta al usuario y obtener el número de identificación
-                readLine.question(`\nDigite el número de identificación  ►  `.green, (numeroIdentificacion) => {
-                    //Se utiliza readLine.question para realizar una pregunta al usuario y obtener el teléfono
-                    readLine.question(`\nDigite el teléfono del cliente  ►  `.green, (telefono) => {
-                        // Se cierra la interfaz de línea de lectura
-                        readLine.close();
+                readLine.question(`\nDigite el número de identificación  ►  `.green, numeroIdentificacion => resolve(numeroIdentificacion))
+            })
+        //La pregunta se seguirá ejecutando mientras el número de identificación este vacio y no sea un número
+        } while (numeroIdentificacion === '' || isNaN(numeroIdentificacion));
 
-                        /*Se imprime en la consola un cuadro con un titulo y los respectivos datos que se solicitaron 
-                        del cliente, junto con la información de los productos que pidió el cliente*/
-                        console.log(`\n★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
-                        console.log(`★                    `.cyan + `FACTURA DE COMPRA`.bgMagenta + `                       ★`.magenta)
-                        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
-                        console.log(`★              `.magenta + `Nombre del cliente: ${nombreCliente}`.cyan + `                ★`.magenta);
-                        console.log(`★              `.magenta + `Identificación: ${numeroIdentificacion}`.cyan + `                ★`.magenta);
-                        console.log(`★              `.magenta + `Teléfono: ${telefono}`.cyan + `                ★`.magenta);
-                        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
-                        console.log(`★   `.magenta + `Código |    Producto    | Cantidad |  Precio |  Total `.cyan + `   ★`.magenta);
-                        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
-                        //Se declara una variable llamada total con un valor inicial de 0
-                        let total = 0;
-                        //Se itera sobre cada producto del arreglo productos 
-                        this.#productos.forEach(producto => {
-                            //Se declara una variable que guardara el valor subtotal de cada uno de los productos que el usuario solicite
-                            const subtotal = producto.unidades * producto.precio;
-                            //Se imprimen cada uno de los datos que el usuario ingreso a la hora de realizar el pedido
-                            console.log(`★`.magenta + `    ${producto.codigo}    |    ${producto.nombre}    |    ${producto.unidades}    |  ${producto.precio}  |   ${subtotal} `.cyan + `★`.magenta);
-                            //Se suma el subtotal de todos los productos añadidos al pedido y los guarda en la variable total
-                            total += subtotal;
-                        });
-                        //Se imprime el valor total de la suma de todos los productos
-                        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
-                        console.log(`★                     `.magenta + `TOTAL: ${total}`.cyan + `                           ★`.magenta);
-                        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
+        /*Se utiliza un bucle do-while para obtener y verificar que el usuario ingrese un número de teléfono
+        válido*/
+        do {
+            //Se utiliza new Promise para crear una promesa que se resolverá cuando se obtenga el número de teléfono
+            telefono = await new Promise(resolve => {
+                //Se utiliza readLine.question para realizar una pregunta al usuario y obtener el número de identificación
+                readLine.question(`\nDigite el teléfono del cliente  ►  `.green, telefono => resolve(telefono))
+            })
+        //La pregunta se seguirá ejecutando mientras el número de identificación este vacio y no sea un número
+        } while (telefono === '' || isNaN(telefono));
 
-                        //Se imprime un mensaje en la consola agradeciendo la compra del cliente
-                        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
-                        console.log(`★                 `.magenta + `¡Gracias por su compra!`.cyan + `                    ★`.magenta);
-                        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
-                        //Se resuelve la promesa externa cuando se haya impreso la factura
-                        resolve();
-                    })
-                });
-            });
+        /*Se imprime en la consola un cuadro con un titulo y los respectivos datos que se solicitaron 
+        del cliente, junto con la información de los productos que pidió el cliente*/
+        console.log(`\n★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
+        console.log(`★                    `.cyan + `FACTURA DE COMPRA`.bgMagenta + `                       ★`.magenta)
+        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
+        console.log(`★              `.magenta + `Nombre del cliente: ${nombreCliente}`.cyan + `                ★`.magenta);
+        console.log(`★              `.magenta + `Identificación: ${numeroIdentificacion}`.cyan + `                ★`.magenta);
+        console.log(`★              `.magenta + `Teléfono: ${telefono}`.cyan + `                ★`.magenta);
+        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
+        console.log(`★   `.magenta + `Código |    Producto    | Cantidad |  Precio |  Total `.cyan + `   ★`.magenta);
+        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
+        //Se declara una variable llamada total con un valor inicial de 0
+        let total = 0;
+        //Se itera sobre cada producto del arreglo productos 
+        this.#productos.forEach(producto => {
+            //Se declara una variable que guardara el valor subtotal de cada uno de los productos que el usuario solicite
+            const subtotal = producto.unidades * producto.precio;
+            //Se imprimen cada uno de los datos que el usuario ingreso a la hora de realizar el pedido
+            console.log(`★`.magenta + `    ${producto.codigo}    |    ${producto.nombre}    |    ${producto.unidades}    |  ${producto.precio}  |   ${subtotal} `.cyan + `★`.magenta);
+            //Se suma el subtotal de todos los productos añadidos al pedido y los guarda en la variable total
+            total += subtotal;
         });
+        //Se imprime el valor total de la suma de todos los productos
+        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
+        console.log(`★                     `.magenta + `TOTAL: ${total}`.cyan + `                           ★`.magenta);
+        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
+
+        //Se imprime un mensaje en la consola agradeciendo la compra del cliente
+        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
+        console.log(`★                 `.magenta + `¡Gracias por su compra!`.cyan + `                    ★`.magenta);
+        console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.magenta);
+
+        readLine.close();
     };
 }
 

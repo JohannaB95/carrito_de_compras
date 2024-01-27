@@ -34,24 +34,24 @@ const main = async () => {
     do {
          // Bucle interno para asegurarse de que la opción ingresada sea válida (entre '0' y '7')
         do {
+            //Se muestra el menú de opciones y se espera la entrada del usuario
             option = await mostrarMenu();
+        //Mientras la opción no sea mayor o igual a 0 y menor o igual a 7, se seguirá mostrando el menú
         } while (!(option >= '0' && option <= '7'));
 
-        /*
-         * Función principal que implementa un menú interactivo.
-         * Se utiliza una estructura de selección switch que tendrá como parámetro a option.
-         */
+        /*Función principal que implementa un menú interactivo.
+        Se utiliza una estructura de selección switch que tendrá como parámetro a option.*/
         switch (option) {
             // Si la opción elegida es la 1: Caso 1: mostrar la cantidad de productos almacenados en el archivo datos.json
             case '1':
                 //Se utiliza un console.clear que limpiara la consola
                 console.clear();
-                //se imprime un encabezado que indica lo que se realiza en esta opción
+                //Se imprime un encabezado que indica lo que se realiza en esta opción
                 console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦`.cyan);
                 console.log(`♦   `.cyan + `Cantidad de productos`.bgCyan + `   ♦`.cyan);
                 console.log(`♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦♦\n`.cyan);
 
-                /*Para cargar el archivo, se utiliza el método cargarArchivoProductos del objeto productosTienda,
+                /*Para cargar el archivo, se utiliza el método cargarArchivoProductos de la clase productosTienda,
                  y se utiliza la palabra clave 'await' para esperar a que la operación se complete antes de continuar.*/
                 await productosTienda.cargarArchivoProductos();
                // La variable archivoProductosCargado se establecerá en true cuando el archivo de productos se haya cargado correctamente.
@@ -62,13 +62,13 @@ const main = async () => {
             case '2':
                 //Se utiliza un console.clear que limpiara la consola
                 console.clear();
-                //se imprime un encabezado que indica lo que se realiza en esta opción
+                //Se imprime un encabezado que indica lo que se realiza en esta opción
                 console.log(`\n★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.cyan);
                 console.log(`★  `.cyan + `Grabar Copia de Respaldo`.bgCyan + `  ★`.cyan);
                 console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.cyan);
 
-                /*Para grabar la copia de respaldo, se utiliza el método grabarCopiaRespaldo del objeto productosTienda,
-                 y se utiliza la palabra clave 'await' para esperar a que la operación se complete antes de continuar.*/
+                /*Para grabar la copia de respaldo, se utiliza el método grabarCopiaRespaldo de la clase productosTienda,
+                y se utiliza la palabra clave 'await' para esperar a que la operación se complete antes de continuar.*/
                 await productosTienda.grabarCopiaRespaldo();
                 // Fin del caso 2
                 break;
@@ -76,12 +76,12 @@ const main = async () => {
             case '3':
                 //Se utiliza un console.clear que limpiara la consola
                 console.clear();
-                //se imprime un encabezado que indica lo que se realiza en esta opción
+                //Se imprime un encabezado que indica lo que se realiza en esta opción
                 console.log(`\n★★★★★★★★★★★★★★★★★★★★★★★★★`.cyan);
                 console.log(`★  `.cyan + `Reparación de datos`.bgCyan + `  ★`.cyan);
                 console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★`.cyan);
-                  /*Para la reparación de datos, se utiliza el método reparacionDatos del objeto productosTienda,
-                 y se utiliza la palabra clave 'await' para esperar a que la operación se complete antes de continuar.*/
+                /*Para la reparación de datos, se utiliza el método reparacionDatos de la clase productosTienda,
+                y se utiliza la palabra clave 'await' para esperar a que la operación se complete antes de continuar.*/
                 await productosTienda.reparacionDatos();
                 // Fin del caso 3
                 break;
@@ -89,21 +89,21 @@ const main = async () => {
             case '4':
                 //Se utiliza un console.clear que limpiara la consola
                 console.clear();
-                //se imprime un encabezado que indica lo que se realiza en esta opción
+                //Se imprime un encabezado que indica lo que se realiza en esta opción
                 console.log(`\n★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.cyan);
                 console.log(`★  `.cyan + `Ingresar un Nuevo Producto`.bgCyan + `  ★`.cyan);
                 console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.cyan);
 
-                //Para mostrar los productos, se utiliza el método mostrarProductos del objeto productosTienda
+                //Para mostrar los productos, se utiliza el método mostrarProductos de la clase productosTienda
                 productosTienda.mostrarProductos();
-                       /*Se usa un condicional if-else, para comprobar si el archivo de productos ha sido cargado o no.
+                /*Se usa un condicional if-else, para comprobar si el archivo de productos ha sido cargado o no.
                 Si el archivo de productos no ha sido cargado (!archivoProductosCargado es true),
                 se imprime un mensaje de error indicando que se debe cargar primero el archivo de productos.*/
                 if (!archivoProductosCargado) {
                     console.log(`\nError: Debe cargar primero el archivo de productos`.red);
                 /* Si el archivo de productos ha sido cargado (archivoProductosCargado es false),
-                 se ejecuta el bloque else. En este caso, se utiliza 'await' para esperar a que el usuario
-                 ingrese un nuevo producto utilizando el método preguntarNuevoProducto de productosTienda.*/
+                se ejecuta el bloque else. En este caso, se utiliza 'await' para esperar a que el usuario
+                ingrese un nuevo producto utilizando el método preguntarNuevoProducto de productosTienda.*/
                 } else {
                     await productosTienda.preguntarNuevoProducto();
                 }
@@ -113,12 +113,12 @@ const main = async () => {
             case '5':
                 //Se utiliza un console.clear que limpiara la consola
                 console.clear();
-                //se imprime un encabezado que indica lo que se realiza en esta opción
+                //Se imprime un encabezado que indica lo que se realiza en esta opción
                 console.log(`\n★★★★★★★★★★★★★★★★★★★★★★★★★★`.cyan);
                 console.log(`★  `.cyan + `Eliminar un Producto`.bgCyan + `  ★`.cyan);
                 console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★`.cyan);
 
-                //Para mostrar los productos, se utiliza el método mostrarProductos del objeto productosTienda
+                //Para mostrar los productos, se utiliza el método mostrarProductos de la clase productosTienda
                 productosTienda.mostrarProductos();
 
                 /*Se usa un condicional if-else, para comprobar si el archivo de productos ha sido cargado o no.
@@ -138,12 +138,12 @@ const main = async () => {
             case '6':
                 //Se utiliza un console.clear que limpiara la consola
                 console.clear();
-                //se imprime un encabezado que indica lo que se realiza en esta opción
+                //Se imprime un encabezado que indica lo que se realiza en esta opción
                 console.log(`\n★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.cyan);
                 console.log(`★  `.cyan + `Realizar un Nuevo Pedido`.bgCyan + `  ★`.cyan);
                 console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.cyan);
 
-                 //Para mostrar los productos, se utiliza el método mostrarProductos del objeto productosTienda
+                 //Para mostrar los productos, se utiliza el método mostrarProductos de la clase productosTienda
                  productosTienda.mostrarProductos();
 
                 /*Se usa un condicional if-else, para comprobar si el archivo de productos ha sido cargado o no.
@@ -163,34 +163,36 @@ const main = async () => {
             case '7':
                 //Se utiliza un console.clear que limpiara la consola
                 console.clear();
-                //se imprime un encabezado que indica lo que se realiza en esta opción
+                //Se imprime un encabezado que indica lo que se realiza en esta opción
                 console.log(`\n★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.cyan);
                 console.log(`★      `.cyan + `Impresión factura`.bgCyan + `     ★`.cyan);
                 console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.cyan);
 
-                /*Para la impresión de la factura, se utiliza el método imprimirFactura del objeto carritoCompras,
-                 y se utiliza la palabra clave 'await' para esperar a que la operación se complete antes de continuar.*/
+                /*Para la impresión de la factura, se utiliza el método imprimirFactura de la clase carritoCompras,
+                y se utiliza la palabra clave 'await' para esperar a que la operación se complete antes de continuar.*/
                 await carritoCompras.imprimirFactura();
                 // Fin del caso 7
                 break;
             case '0':
                 //Se utiliza un console.clear que limpiara la consola
                 console.clear();
-                //se imprime un encabezado que indica lo que se realiza en esta opción
+                //Se imprime un encabezado que indica lo que se realiza en esta opción
                 console.log(`\n★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.cyan);
                 console.log(`★    `.cyan + `Cerrando la aplicación...`.bgCyan + `    ★`.cyan);
                 console.log(`★`.cyan + `Gracias por usar nuestro servicio`.bgCyan + `★`.cyan)
                 console.log(`★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★`.cyan);
                 // Fin del caso 0
                 break;
-             //Si la opción ingresada no coincide con ningún caso, se ejecuta el bloque default y se imprime un mensaje de error en la consola.
+             /*Si la opción ingresada no coincide con ningún caso, se ejecuta el bloque default y se imprime un 
+             mensaje de error en la consola.*/
             default:
                 console.log(`\nOpción no válida. Intente de nuevo.`.red);
                 // Fin de default
                 break;
         }
         /*Si la opción no es '0', se espera a que el usuario presione una tecla antes de continuar.
-        Esto ayuda a pausar la ejecución del programa y permite al usuario visualizar el resultado antes de mostrar nuevamente el menú.*/
+        Esto ayuda a pausar la ejecución del programa y permite al usuario visualizar el resultado antes de 
+        mostrar nuevamente el menú.*/
         if (option !== '0') {
             await pausa();
         }

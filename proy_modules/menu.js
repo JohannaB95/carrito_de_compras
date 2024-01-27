@@ -1,4 +1,4 @@
-//Se crea una función constante que es una función flecha llamada mostrarMenu
+//Se crea una función flecha de tipo constante llamada mostrarMenu
 const mostrarMenu = () => {
 
     // Retorna una nueva promesa que se resuelve con el valor proporcionado en la función 'resolve'
@@ -34,7 +34,7 @@ const mostrarMenu = () => {
     })
 };
 
-//Se crea una función constante que es una función flecha llamada pausa
+//Se crea una constante llamada pausa que es una función flecha
 const pausa = () => {
 
     // Retorna una nueva promesa que se resuelve con el valor proporcionado en la función 'resolve'
